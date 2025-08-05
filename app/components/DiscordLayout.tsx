@@ -6,7 +6,6 @@ import { generateRoomId, randomString } from '@/lib/livekit/client-utils';
 import { useRoomContext } from '@/lib/livekit/RoomContext';
 import { VoiceStatusBar } from './VoiceStatusBar';
 import { RoomContext } from '@livekit/components-react';
-import { useGlobalVoicePresence } from '@/lib/livekit/useGlobalVoicePresence';
 import styles from '../../styles/Discord.module.css';
 
 interface Room {
@@ -135,9 +134,43 @@ export function DiscordLayout({ children }: { children: React.ReactNode }) {
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [currentUser, setCurrentUser] = useState<string>('');
+  const [presence, setPresence] = useState<{[roomId: string]: any[]}>({});
   
-  // Initialize global presence tracking
-  const { presence } = useGlobalVoicePresence();
+  // Track participants in current room
+  useEffect(() => {
+    if (currentRoom && isConnected) {
+      const updatePresence = () => {
+        const participants = Array.from(currentRoom.remoteParticipants.values()).map(p => ({
+          id: p.identity,
+          name: p.identity,
+        }));
+        // Add local participant
+        participants.push({
+          id: currentRoom.localParticipant.identity,
+          name: currentRoom.localParticipant.identity,
+        });
+        setPresence(prev => ({
+          ...prev,
+          [currentRoomName!]: participants,
+        }));
+      };
+
+      // Initial update
+      updatePresence();
+
+      // Listen for participant changes
+      const handleParticipantConnected = () => updatePresence();
+      const handleParticipantDisconnected = () => updatePresence();
+
+      currentRoom.on('participantConnected', handleParticipantConnected);
+      currentRoom.on('participantDisconnected', handleParticipantDisconnected);
+
+      return () => {
+        currentRoom.off('participantConnected', handleParticipantConnected);
+        currentRoom.off('participantDisconnected', handleParticipantDisconnected);
+      };
+    }
+  }, [currentRoom, isConnected, currentRoomName]);
 
   // Get user identity from localStorage on mount
   useEffect(() => {

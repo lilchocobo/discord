@@ -24,6 +24,23 @@ export default function HomePage() {
           />
           <DebugMode />
           <RecordingIndicator />
+          
+          {/* Debug participant info */}
+          <div style={{ 
+            position: 'absolute', 
+            top: '10px', 
+            right: '10px', 
+            background: 'rgba(0,0,0,0.8)', 
+            color: 'white', 
+            padding: '10px', 
+            borderRadius: '5px',
+            fontSize: '12px',
+            zIndex: 1000
+          }}>
+            <div>Local: {currentRoom.localParticipant.identity}</div>
+            <div>Remote: {Array.from(currentRoom.remoteParticipants.values()).map(p => p.identity).join(', ')}</div>
+            <div>Total: {currentRoom.remoteParticipants.size + 1}</div>
+          </div>
         </RoomContext.Provider>
       </div>
     );

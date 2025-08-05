@@ -103,6 +103,9 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       
       // Set up event listeners
       room.on(RoomEvent.Connected, () => {
+        console.log('Connected to room:', room.name);
+        console.log('Local participant:', room.localParticipant.identity);
+        console.log('Remote participants:', Array.from(room.remoteParticipants.values()).map(p => p.identity));
         setIsConnected(true);
         setIsConnecting(false);
       });
@@ -116,6 +119,23 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       room.on(RoomEvent.ParticipantDisconnected, (participant) => {
         // Handle when other participants disconnect
         console.log('Participant disconnected:', participant.identity);
+        console.log('Total participants now:', room.remoteParticipants.size + 1);
+      });
+
+      room.on(RoomEvent.ParticipantConnected, (participant) => {
+        // Handle when other participants connect
+        console.log('Participant connected:', participant.identity);
+        console.log('Total participants now:', room.remoteParticipants.size + 1);
+      });
+
+      room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+        // Handle when tracks are subscribed
+        console.log('Track subscribed:', track.kind, 'from', participant.identity);
+      });
+
+      room.on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+        // Handle when tracks are unsubscribed
+        console.log('Track unsubscribed:', track.kind, 'from', participant.identity);
       });
 
       room.on(RoomEvent.EncryptionError, (error) => {
@@ -141,12 +161,12 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
 
       await room.connect(connectionDetails.serverUrl, connectionDetails.participantToken, connectOptions);
 
-      // Enable microphone only (camera disabled by default)
+      // Enable microphone and camera by default
       try {
         await room.localParticipant.setMicrophoneEnabled(true);
-        // Camera remains disabled by default
+        await room.localParticipant.setCameraEnabled(true);
       } catch (mediaError) {
-        console.warn('Failed to enable microphone:', mediaError);
+        console.warn('Failed to enable microphone/camera:', mediaError);
       }
 
       setCurrentRoom(room);
