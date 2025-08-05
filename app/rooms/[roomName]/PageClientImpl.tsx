@@ -46,6 +46,8 @@ export function PageClientImpl(props: {
       username: `User${Math.random().toString(36).substr(2, 4)}`,
       videoEnabled: true,
       audioEnabled: true,
+      videoDeviceId: '',
+      audioDeviceId: '',
     };
   }, []);
   
