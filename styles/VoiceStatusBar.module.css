@@ -1,0 +1,126 @@
+.voiceStatusBar {
+  position: relative;
+  height: 52px;
+  background: #292b2f;
+  border-top: 1px solid #202225;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  color: #dcddde;
+  margin-bottom: 0;
+}
+
+.connectionInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3ba55c;
+}
+
+.connectionText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.status {
+  font-size: 8px;
+  font-weight: 600;
+  color: #3ba55c;
+}
+
+.roomName {
+  font-size: 12px;
+  color: #b9bbbe;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 4px;
+  background: #4f545c;
+  color: #dcddde;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.controlButton:hover {
+  background: #5865f2;
+}
+
+.controlButton.muted {
+  background: #ed4245;
+  color: white;
+}
+
+.controlButton.muted:hover {
+  background: #c23b3e;
+}
+
+.controlButton.disabled {
+  background: #ed4245;
+  color: white;
+}
+
+.controlButton.disabled:hover {
+  background: #c23b3e;
+}
+
+.controlButton.active {
+  background: #3ba55c;
+  color: white;
+}
+
+.controlButton.active:hover {
+  background: #2d7d32;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.leaveButton {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  background: #4f545c;
+  color: #dcddde;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.leaveButton:hover {
+  background: #ed4245;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .voiceStatusBar {
+    padding: 0 12px;
+  }
+  
+  .controls {
+    gap: 4px;
+  }
+  
+  .controlButton {
+    width: 32px;
+    height: 32px;
+  }
+}
