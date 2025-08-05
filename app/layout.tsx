@@ -4,7 +4,7 @@ import '@livekit/components-styles/prefabs';
 import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'react-hot-toast';
 import { DiscordLayout } from './components/DiscordLayout';
-import { RoomProvider } from '@/lib/RoomContext';
+import { RoomProvider } from '@/lib/livekit/RoomContext';
 
 export const metadata: Metadata = {
   title: {

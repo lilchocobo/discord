@@ -1,6 +1,6 @@
 import { videoCodecs } from 'livekit-client';
 import { VideoConferenceClientImpl } from './VideoConferenceClientImpl';
-import { isVideoCodec } from '@/lib/types';
+import { isVideoCodec } from '@/lib/livekit/types';
 
 interface PageProps {
   searchParams: Promise<{

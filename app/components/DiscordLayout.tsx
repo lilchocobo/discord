@@ -2,11 +2,11 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { generateRoomId, randomString } from '@/lib/client-utils';
-import { useRoomContext } from '@/lib/RoomContext';
+import { generateRoomId, randomString } from '@/lib/livekit/client-utils';
+import { useRoomContext } from '@/lib/livekit/RoomContext';
 import { VoiceStatusBar } from './VoiceStatusBar';
 import { RoomContext } from '@livekit/components-react';
-import { useGlobalVoicePresence } from '@/lib/useGlobalVoicePresence';
+import { useGlobalVoicePresence } from '@/lib/livekit/useGlobalVoicePresence';
 import styles from '../../styles/Discord.module.css';
 
 interface Room {

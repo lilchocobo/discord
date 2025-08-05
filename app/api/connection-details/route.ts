@@ -1,6 +1,6 @@
-import { randomString } from '@/lib/client-utils';
-import { getLiveKitURL } from '@/lib/getLiveKitURL';
-import { ConnectionDetails } from '@/lib/types';
+import { randomString } from '@/lib/livekit/client-utils';
+import { getLiveKitURL } from '@/lib/livekit/getLiveKitURL';
+import { ConnectionDetails } from '@/lib/livekit/types';
 import { AccessToken, AccessTokenOptions, VideoGrant } from 'livekit-server-sdk';
 import { NextRequest, NextResponse } from 'next/server';
 

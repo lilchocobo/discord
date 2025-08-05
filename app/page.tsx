@@ -1,11 +1,11 @@
 'use client';
 
-import { useRoomContext } from '@/lib/RoomContext';
+import { useRoomContext } from '@/lib/livekit/RoomContext';
 import { RoomContext, VideoConference, formatChatMessageLinks } from '@livekit/components-react';
-import { DebugMode } from '@/lib/Debug';
-import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
-import { RecordingIndicator } from '@/lib/RecordingIndicator';
-import { SettingsMenu } from '@/lib/SettingsMenu';
+import { DebugMode } from '@/lib/livekit/Debug';
+import { KeyboardShortcuts } from '@/lib/livekit/KeyboardShortcuts';
+import { RecordingIndicator } from '@/lib/livekit/RecordingIndicator';
+import { SettingsMenu } from '@/lib/livekit/SettingsMenu';
 import styles from '../styles/Discord.module.css';
 
 const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';

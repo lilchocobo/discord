@@ -1,0 +1,4178 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  assets/
+    template-graphic.svg
+  workflows/
+    sync-to-production.yaml
+    test.yaml
+app/
+  api/
+    connection-details/
+      route.ts
+    record/
+      start/
+        route.ts
+      stop/
+        route.ts
+  components/
+    DiscordLayout.tsx
+    VoiceStatusBar.tsx
+  custom/
+    page.tsx
+    VideoConferenceClientImpl.tsx
+  rooms/
+    [roomName]/
+      page.tsx
+      PageClientImpl.tsx
+  layout.tsx
+  page.tsx
+lib/
+  CameraSettings.tsx
+  client-utils.ts
+  Debug.tsx
+  getLiveKitURL.test.ts
+  getLiveKitURL.ts
+  KeyboardShortcuts.tsx
+  MicrophoneSettings.tsx
+  RecordingIndicator.tsx
+  RoomContext.tsx
+  SettingsMenu.tsx
+  supabase.ts
+  types.ts
+  useGlobalVoicePresence.ts
+  usePerfomanceOptimiser.ts
+  useSetupE2EE.ts
+  useVoiceRoomPresence.ts
+public/
+  images/
+    livekit-meet-home.svg
+    livekit-safari-pinned-tab.svg
+styles/
+  Debug.module.css
+  Discord.module.css
+  globals.css
+  Home.module.css
+  SettingsMenu.module.css
+  VoiceStatusBar.module.css
+.env.example
+.eslintrc.json
+.gitattributes
+.gitignore
+.prettierignore
+.prettierrc
+LICENSE
+next-env.d.ts
+next.config.js
+package.json
+README.md
+renovate.json
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/assets/template-graphic.svg">
+<svg width="270" height="151" viewBox="0 0 270 151" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="270" height="151" fill="#070707"/>
+<rect x="8.5" y="8.5" width="192" height="134" rx="1.5" fill="#131313"/>
+<rect x="8.5" y="8.5" width="192" height="134" rx="1.5" stroke="#1F1F1F"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M101.167 71.4998C101.167 69.6589 102.66 68.1665 104.501 68.1665C106.342 68.1665 107.834 69.6589 107.834 71.4998C107.834 73.3408 106.342 74.8332 104.501 74.8332C102.66 74.8332 101.167 73.3408 101.167 71.4998Z" fill="#666666"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M97.834 82.1665C97.834 78.4846 100.819 75.4998 104.501 75.4998C108.183 75.4998 111.167 78.4846 111.167 82.1665V82.8332H97.834V82.1665Z" fill="#666666"/>
+<rect x="209.5" y="8.5" width="52" height="38.6667" rx="1.5" fill="#131313"/>
+<rect x="209.5" y="8.5" width="52" height="38.6667" rx="1.5" stroke="#1F1F1F"/>
+<g clip-path="url(#clip0_834_19648)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M232.167 23.8333C232.167 21.9924 233.66 20.5 235.501 20.5C237.342 20.5 238.834 21.9924 238.834 23.8333C238.834 25.6743 237.342 27.1667 235.501 27.1667C233.66 27.1667 232.167 25.6743 232.167 23.8333Z" fill="#666666"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M228.834 34.5C228.834 30.8181 231.819 27.8333 235.501 27.8333C239.183 27.8333 242.167 30.8181 242.167 34.5V35.1667H228.834V34.5Z" fill="#666666"/>
+</g>
+<rect x="209.5" y="56.1665" width="52" height="38.6667" rx="1.5" fill="#131313"/>
+<rect x="209.5" y="56.1665" width="52" height="38.6667" rx="1.5" stroke="#CCCCCC"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M232.167 71.4998C232.167 69.6589 233.66 68.1665 235.501 68.1665C237.342 68.1665 238.834 69.6589 238.834 71.4998C238.834 73.3408 237.342 74.8332 235.501 74.8332C233.66 74.8332 232.167 73.3408 232.167 71.4998Z" fill="#CCCCCC"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M228.834 82.1665C228.834 78.4846 231.819 75.4998 235.501 75.4998C239.183 75.4998 242.167 78.4846 242.167 82.1665V82.8332H228.834V82.1665Z" fill="#CCCCCC"/>
+<rect x="209.5" y="103.833" width="52" height="38.6667" rx="1.5" fill="#131313"/>
+<rect x="209.5" y="103.833" width="52" height="38.6667" rx="1.5" stroke="#1F1F1F"/>
+<g clip-path="url(#clip1_834_19648)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M232.167 119.167C232.167 117.326 233.66 115.833 235.501 115.833C237.342 115.833 238.834 117.326 238.834 119.167C238.834 121.008 237.342 122.5 235.501 122.5C233.66 122.5 232.167 121.008 232.167 119.167Z" fill="#666666"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M228.834 129.833C228.834 126.152 231.819 123.167 235.501 123.167C239.183 123.167 242.167 126.152 242.167 129.833V130.5H228.834V129.833Z" fill="#666666"/>
+</g>
+<defs>
+<clipPath id="clip0_834_19648">
+<rect width="16" height="16" fill="white" transform="translate(227.5 19.8335)"/>
+</clipPath>
+<clipPath id="clip1_834_19648">
+<rect width="16" height="16" fill="white" transform="translate(227.5 115.167)"/>
+</clipPath>
+</defs>
+</svg>
+</file>
+
+<file path=".github/workflows/sync-to-production.yaml">
+name: Sync main to sandbox-production
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history so we can force push
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@livekit.io'
+
+      - name: Sync to sandbox-production
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git checkout sandbox-production || git checkout -b sandbox-production
+          git merge --strategy-option theirs main
+          git push origin sandbox-production
+</file>
+
+<file path=".github/workflows/test.yaml">
+name: Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v4
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      run: pnpm install
+
+    - name: ESLint
+      run: pnpm lint
+    
+    - name: Prettier
+      run: pnpm format:check
+
+    - name: Run Tests
+      run: pnpm test
+</file>
+
+<file path="app/api/connection-details/route.ts">
+import { randomString } from '@/lib/client-utils';
+import { getLiveKitURL } from '@/lib/getLiveKitURL';
+import { ConnectionDetails } from '@/lib/types';
+import { AccessToken, AccessTokenOptions, VideoGrant } from 'livekit-server-sdk';
+import { NextRequest, NextResponse } from 'next/server';
+
+const API_KEY = process.env.LIVEKIT_API_KEY;
+const API_SECRET = process.env.LIVEKIT_API_SECRET;
+const LIVEKIT_URL = process.env.LIVEKIT_URL;
+
+const COOKIE_KEY = 'random-participant-postfix';
+
+export async function GET(request: NextRequest) {
+  try {
+    // Parse query parameters
+    const roomName = request.nextUrl.searchParams.get('roomName');
+    const participantName = request.nextUrl.searchParams.get('participantName');
+    const metadata = request.nextUrl.searchParams.get('metadata') ?? '';
+    const region = request.nextUrl.searchParams.get('region');
+    if (!LIVEKIT_URL) {
+      throw new Error('LIVEKIT_URL is not defined');
+    }
+    const livekitServerUrl = region ? getLiveKitURL(LIVEKIT_URL, region) : LIVEKIT_URL;
+    let randomParticipantPostfix = request.cookies.get(COOKIE_KEY)?.value;
+    if (livekitServerUrl === undefined) {
+      throw new Error('Invalid region');
+    }
+
+    if (typeof roomName !== 'string') {
+      return new NextResponse('Missing required query parameter: roomName', { status: 400 });
+    }
+    if (participantName === null) {
+      return new NextResponse('Missing required query parameter: participantName', { status: 400 });
+    }
+
+    // Generate participant token
+    if (!randomParticipantPostfix) {
+      randomParticipantPostfix = randomString(4);
+    }
+    const participantToken = await createParticipantToken(
+      {
+        identity: `${participantName}__${randomParticipantPostfix}`,
+        name: participantName,
+        metadata,
+      },
+      roomName,
+    );
+
+    // Return connection details
+    const data: ConnectionDetails = {
+      serverUrl: livekitServerUrl,
+      roomName: roomName,
+      participantToken: participantToken,
+      participantName: participantName,
+    };
+    return new NextResponse(JSON.stringify(data), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': `${COOKIE_KEY}=${randomParticipantPostfix}; Path=/; HttpOnly; SameSite=Strict; Secure; Expires=${getCookieExpirationTime()}`,
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return new NextResponse(error.message, { status: 500 });
+    }
+  }
+}
+
+function createParticipantToken(userInfo: AccessTokenOptions, roomName: string) {
+  const at = new AccessToken(API_KEY, API_SECRET, userInfo);
+  at.ttl = '5m';
+  const grant: VideoGrant = {
+    room: roomName,
+    roomJoin: true,
+    canPublish: true,
+    canPublishData: true,
+    canSubscribe: true,
+  };
+  at.addGrant(grant);
+  return at.toJwt();
+}
+
+function getCookieExpirationTime(): string {
+  var now = new Date();
+  var time = now.getTime();
+  var expireTime = time + 60 * 120 * 1000;
+  now.setTime(expireTime);
+  return now.toUTCString();
+}
+</file>
+
+<file path="app/api/record/start/route.ts">
+import { EgressClient, EncodedFileOutput, S3Upload } from 'livekit-server-sdk';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(req: NextRequest) {
+  try {
+    const roomName = req.nextUrl.searchParams.get('roomName');
+
+    /**
+     * CAUTION:
+     * for simplicity this implementation does not authenticate users and therefore allows anyone with knowledge of a roomName
+     * to start/stop recordings for that room.
+     * DO NOT USE THIS FOR PRODUCTION PURPOSES AS IS
+     */
+
+    if (roomName === null) {
+      return new NextResponse('Missing roomName parameter', { status: 403 });
+    }
+
+    const {
+      LIVEKIT_API_KEY,
+      LIVEKIT_API_SECRET,
+      LIVEKIT_URL,
+      S3_KEY_ID,
+      S3_KEY_SECRET,
+      S3_BUCKET,
+      S3_ENDPOINT,
+      S3_REGION,
+    } = process.env;
+
+    const hostURL = new URL(LIVEKIT_URL!);
+    hostURL.protocol = 'https:';
+
+    const egressClient = new EgressClient(hostURL.origin, LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
+
+    const existingEgresses = await egressClient.listEgress({ roomName });
+    if (existingEgresses.length > 0 && existingEgresses.some((e) => e.status < 2)) {
+      return new NextResponse('Meeting is already being recorded', { status: 409 });
+    }
+
+    const fileOutput = new EncodedFileOutput({
+      filepath: `${new Date(Date.now()).toISOString()}-${roomName}.mp4`,
+      output: {
+        case: 's3',
+        value: new S3Upload({
+          endpoint: S3_ENDPOINT,
+          accessKey: S3_KEY_ID,
+          secret: S3_KEY_SECRET,
+          region: S3_REGION,
+          bucket: S3_BUCKET,
+        }),
+      },
+    });
+
+    await egressClient.startRoomCompositeEgress(
+      roomName,
+      {
+        file: fileOutput,
+      },
+      {
+        layout: 'speaker',
+      },
+    );
+
+    return new NextResponse(null, { status: 200 });
+  } catch (error) {
+    if (error instanceof Error) {
+      return new NextResponse(error.message, { status: 500 });
+    }
+  }
+}
+</file>
+
+<file path="app/api/record/stop/route.ts">
+import { EgressClient } from 'livekit-server-sdk';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(req: NextRequest) {
+  try {
+    const roomName = req.nextUrl.searchParams.get('roomName');
+
+    /**
+     * CAUTION:
+     * for simplicity this implementation does not authenticate users and therefore allows anyone with knowledge of a roomName
+     * to start/stop recordings for that room.
+     * DO NOT USE THIS FOR PRODUCTION PURPOSES AS IS
+     */
+
+    if (roomName === null) {
+      return new NextResponse('Missing roomName parameter', { status: 403 });
+    }
+
+    const { LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL } = process.env;
+
+    const hostURL = new URL(LIVEKIT_URL!);
+    hostURL.protocol = 'https:';
+
+    const egressClient = new EgressClient(hostURL.origin, LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
+    const activeEgresses = (await egressClient.listEgress({ roomName })).filter(
+      (info) => info.status < 2,
+    );
+    if (activeEgresses.length === 0) {
+      return new NextResponse('No active recording found', { status: 404 });
+    }
+    await Promise.all(activeEgresses.map((info) => egressClient.stopEgress(info.egressId)));
+
+    return new NextResponse(null, { status: 200 });
+  } catch (error) {
+    if (error instanceof Error) {
+      return new NextResponse(error.message, { status: 500 });
+    }
+  }
+}
+</file>
+
+<file path="app/components/DiscordLayout.tsx">
+'use client';
+
+import { useRouter, usePathname } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { generateRoomId, randomString } from '@/lib/client-utils';
+import { useRoomContext } from '@/lib/RoomContext';
+import { VoiceStatusBar } from './VoiceStatusBar';
+import { RoomContext } from '@livekit/components-react';
+import { useGlobalVoicePresence } from '@/lib/useGlobalVoicePresence';
+import styles from '../../styles/Discord.module.css';
+
+interface Room {
+  id: string;
+  name: string;
+}
+
+// Available rooms - in real app this would come from your backend
+const mockRooms: Room[] = [
+  { id: 'general-voice', name: 'General' },
+  { id: 'gaming-lounge', name: 'Gaming Lounge' },
+  { id: 'study-hall', name: 'Study Hall' },
+  { id: 'music-jam', name: 'Music Jam' },
+  { id: 'dev-talk', name: 'Dev Talk' },
+];
+
+function VoiceChannelIcon({ isActive }: { isActive: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 21H5V3H13V9H19Z"/>
+    </svg>
+  );
+}
+
+function UserAvatar({ name }: { name: string }) {
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+  return (
+    <div className={styles.avatar}>
+      <div className={styles.avatarInner}>
+        {initials}
+      </div>
+      <div className={styles.onlineIndicator} />
+    </div>
+  );
+}
+
+function VoiceChannel({ room, onJoin, isActive, presence }: { 
+  room: Room; 
+  onJoin: (roomId: string) => void; 
+  isActive: boolean;
+  presence: {[roomId: string]: any[]};
+}) {
+  const roomUsers = presence[room.id] || [];
+  
+  return (
+    <div className={styles.voiceChannel}>
+      <div 
+        className={`${styles.channelHeader} ${isActive ? styles.activeChannel : ''}`}
+        onClick={() => onJoin(room.id)}
+      >
+        <div className={styles.channelInfo}>
+          <VoiceChannelIcon isActive={isActive} />
+          <span className={styles.channelName}>{room.name}</span>
+        </div>
+        <button className={styles.joinButton}>
+          Join
+        </button>
+      </div>
+      
+      {/* Show users in the channel */}
+      {roomUsers.length > 0 && (
+        <div className={styles.channelUsers}>
+          {roomUsers.map(user => (
+            <div key={user.id} className={styles.channelUser}>
+              <div className={styles.userAvatar}>
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <span className={styles.userName}>{user.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CreateRoomModal({ isOpen, onClose, onCreateRoom }: {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreateRoom: (name: string) => void;
+}) {
+  const [roomName, setRoomName] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (roomName.trim()) {
+      onCreateRoom(roomName.trim());
+      setRoomName('');
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <h3>Create Voice Channel</h3>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Channel name"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+            className={styles.input}
+            autoFocus
+          />
+          <div className={styles.modalButtons}>
+            <button type="button" onClick={onClose} className={styles.cancelButton}>
+              Cancel
+            </button>
+            <button type="submit" className={styles.createButton}>
+              Create Channel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export function DiscordLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { currentRoomName, joinRoom, isConnecting, currentRoom, isConnected, leaveRoom } = useRoomContext();
+  const [rooms, setRooms] = useState<Room[]>(mockRooms);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string>('');
+  
+  // Initialize global presence tracking
+  const { presence } = useGlobalVoicePresence();
+
+  // Get user identity from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      let userId = localStorage.getItem('livekit-user-id');
+      if (!userId) {
+        userId = `User${Math.random().toString(36).substr(2, 4)}`;
+        localStorage.setItem('livekit-user-id', userId);
+      }
+      setCurrentUser(userId);
+    }
+  }, []);
+
+  const handleJoinRoom = async (roomId: string) => {
+    try {
+      // If already in a room, leave it first
+      if (currentRoomName && currentRoomName !== roomId) {
+        await leaveRoom();
+      }
+      
+      await joinRoom(roomId);
+      // Navigate to home to show the room content
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to join room:', error);
+    }
+  };
+
+  const handleCreateRoom = (name: string) => {
+    const newRoomId = generateRoomId();
+    const newRoom: Room = {
+      id: newRoomId,
+      name,
+    };
+    setRooms(prev => [...prev, newRoom]);
+    handleJoinRoom(newRoomId);
+  };
+
+  return (
+    <div className={styles.discordContainer} data-lk-theme="default">
+      <div className={styles.sidebar}>
+        <div className={styles.serverIcon}>
+          <img src="/images/livekit-meet-home.svg" alt="LiveKit Meet" width="32" height="32" />
+        </div>
+      </div>
+
+      <div className={styles.channelList}>
+        <div className={styles.serverHeader}>
+          <h2>LiveKit Meet</h2>
+        </div>
+
+        <div className={styles.channelCategory}>
+          <div className={styles.categoryHeader}>
+            <span>VOICE CHANNELS</span>
+            <button 
+              className={styles.addChannelButton}
+              onClick={() => setShowCreateModal(true)}
+              title="Create Channel"
+            >
+              +
+            </button>
+          </div>
+
+          <div className={styles.channelsList}>
+            {rooms.map(room => (
+              <VoiceChannel
+                key={room.id}
+                room={room}
+                onJoin={handleJoinRoom}
+                isActive={room.id === currentRoomName}
+                presence={presence}
+              />
+            ))}
+          </div>
+        </div>
+
+        {currentRoom && isConnected ? (
+          <RoomContext.Provider value={currentRoom}>
+            <VoiceStatusBar />
+          </RoomContext.Provider>
+        ) : (
+          <VoiceStatusBar />
+        )}
+
+        <div className={styles.userArea}>
+          <UserAvatar name={currentUser} />
+          <div className={styles.userInfo}>
+            <span className={styles.username}>{currentUser}</span>
+            <span className={styles.userStatus}>Online</span>
+          </div>
+          <div className={styles.userControls}>
+            <button className={styles.controlButton} title="Mute">🎤</button>
+            <button className={styles.controlButton} title="Deafen">🎧</button>
+            <button className={styles.controlButton} title="Settings">⚙️</button>
+          </div>
+        </div>
+        
+     
+      </div>
+
+      <div className={styles.mainContent}>
+        <div className={styles.contentArea}>
+          {children}
+        </div>
+      </div>
+
+      <CreateRoomModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreateRoom={handleCreateRoom}
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="app/components/VoiceStatusBar.tsx">
+'use client';
+
+import React from 'react';
+import { useRoomContext } from '@/lib/RoomContext';
+import { Track } from 'livekit-client';
+import { useTrackToggle, useLocalParticipant } from '@livekit/components-react';
+import styles from '../../styles/VoiceStatusBar.module.css';
+
+function VoiceConnectedIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+    </svg>
+  );
+}
+
+function MicIcon({ muted }: { muted: boolean }) {
+  if (muted) {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.24-5.3-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c.57-.08 1.12-.23 1.64-.46l2.92 2.92L19 20.46 4.27 3z"/>
+      </svg>
+    );
+  }
+  
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+    </svg>
+  );
+}
+
+function CameraIcon({ disabled }: { disabled: boolean }) {
+  if (disabled) {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2zM5 16V8h1.73l8 8H5z"/>
+      </svg>
+    );
+  }
+  
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+    </svg>
+  );
+}
+
+function ScreenShareIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+    </svg>
+  );
+}
+
+
+function VoiceStatusBarInner() {
+  const { currentRoomName, leaveRoom } = useRoomContext();
+  
+  const { localParticipant } = useLocalParticipant();
+  
+  const { toggle: toggleMic, enabled: micEnabled } = useTrackToggle({ 
+    source: Track.Source.Microphone 
+  });
+  const { toggle: toggleCamera, enabled: cameraEnabled } = useTrackToggle({ 
+    source: Track.Source.Camera 
+  });
+  const { toggle: toggleScreenShare, enabled: screenShareEnabled } = useTrackToggle({ 
+    source: Track.Source.ScreenShare 
+  });
+
+  return (
+    <div className={styles.voiceStatusBar}>
+      <div className={styles.connectionInfo}>
+        <VoiceConnectedIcon />
+        <div className={styles.connectionText}>
+          <span className={styles.status}>Connected</span>
+          <span className={styles.roomName}>{currentRoomName}</span>
+        </div>
+      </div>
+
+      <div className={styles.controls}>
+        <button 
+          className={`${styles.controlButton} ${styles.smallButton} ${!micEnabled ? styles.muted : ''}`}
+          onClick={() => toggleMic()}
+          title={micEnabled ? 'Mute' : 'Unmute'}
+          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
+        >
+          <MicIcon muted={!micEnabled} />
+        </button>
+
+        <button 
+          className={`${styles.controlButton} ${styles.smallButton} ${!cameraEnabled ? styles.disabled : ''}`}
+          onClick={() => toggleCamera()}
+          title={cameraEnabled ? 'Turn off camera' : 'Turn on camera'}
+          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
+        >
+          <CameraIcon disabled={!cameraEnabled} />
+        </button>
+
+        <button 
+          className={`${styles.controlButton} ${styles.smallButton} ${screenShareEnabled ? styles.active : ''}`}
+          onClick={() => toggleScreenShare()}
+          title={screenShareEnabled ? 'Stop sharing' : 'Share screen'}
+          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
+        >
+          <ScreenShareIcon />
+        </button>
+
+      </div>
+
+      <div className={styles.actions}>
+        <button 
+          className={styles.leaveButton}
+          onClick={leaveRoom}
+          title="Leave voice channel"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function VoiceStatusBar() {
+  const { currentRoomName, isConnected, leaveRoom } = useRoomContext();
+  
+  // Only render when connected to a room
+  if (!currentRoomName || !isConnected) {
+    return null;
+  }
+
+  return <VoiceStatusBarInner />;
+}
+</file>
+
+<file path="app/custom/page.tsx">
+import { videoCodecs } from 'livekit-client';
+import { VideoConferenceClientImpl } from './VideoConferenceClientImpl';
+import { isVideoCodec } from '@/lib/types';
+
+interface PageProps {
+  searchParams: Promise<{
+    liveKitUrl?: string;
+    token?: string;
+    codec?: string;
+  }>;
+}
+
+export default async function CustomRoomConnection({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const { liveKitUrl, token, codec } = resolvedSearchParams;
+  
+  if (typeof liveKitUrl !== 'string') {
+    return <h2>Missing LiveKit URL</h2>;
+  }
+  if (typeof token !== 'string') {
+    return <h2>Missing LiveKit token</h2>;
+  }
+  if (codec !== undefined && !isVideoCodec(codec)) {
+    return <h2>Invalid codec, if defined it has to be [{videoCodecs.join(', ')}].</h2>;
+  }
+
+  return (
+    <main data-lk-theme="default" style={{ height: '100%' }}>
+      <VideoConferenceClientImpl liveKitUrl={liveKitUrl} token={token} codec={codec} />
+    </main>
+  );
+}
+</file>
+
+<file path="app/custom/VideoConferenceClientImpl.tsx">
+'use client';
+
+import { formatChatMessageLinks, RoomContext, VideoConference } from '@livekit/components-react';
+import {
+  ExternalE2EEKeyProvider,
+  LogLevel,
+  Room,
+  RoomConnectOptions,
+  RoomOptions,
+  VideoPresets,
+  type VideoCodec,
+} from 'livekit-client';
+import { DebugMode } from '@/lib/Debug';
+import { useEffect, useMemo, useState } from 'react';
+import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
+import { SettingsMenu } from '@/lib/SettingsMenu';
+import { useSetupE2EE } from '@/lib/useSetupE2EE';
+import { useLowCPUOptimizer } from '@/lib/usePerfomanceOptimiser';
+
+export function VideoConferenceClientImpl(props: {
+  liveKitUrl: string;
+  token: string;
+  codec: VideoCodec | undefined;
+}) {
+  const keyProvider = new ExternalE2EEKeyProvider();
+  const { worker, e2eePassphrase } = useSetupE2EE();
+  const e2eeEnabled = !!(e2eePassphrase && worker);
+
+  const [e2eeSetupComplete, setE2eeSetupComplete] = useState(false);
+
+  const roomOptions = useMemo((): RoomOptions => {
+    return {
+      publishDefaults: {
+        videoSimulcastLayers: [VideoPresets.h540, VideoPresets.h216],
+        red: !e2eeEnabled,
+        videoCodec: props.codec,
+      },
+      adaptiveStream: { pixelDensity: 'screen' },
+      dynacast: true,
+      e2ee: e2eeEnabled
+        ? {
+            keyProvider,
+            worker,
+          }
+        : undefined,
+    };
+  }, [e2eeEnabled, props.codec, keyProvider, worker]);
+
+  const room = useMemo(() => new Room(roomOptions), [roomOptions]);
+
+  const connectOptions = useMemo((): RoomConnectOptions => {
+    return {
+      autoSubscribe: true,
+    };
+  }, []);
+
+  useEffect(() => {
+    if (e2eeEnabled) {
+      keyProvider.setKey(e2eePassphrase).then(() => {
+        room.setE2EEEnabled(true).then(() => {
+          setE2eeSetupComplete(true);
+        });
+      });
+    } else {
+      setE2eeSetupComplete(true);
+    }
+  }, [e2eeEnabled, e2eePassphrase, keyProvider, room, setE2eeSetupComplete]);
+
+  useEffect(() => {
+    if (e2eeSetupComplete) {
+      room.connect(props.liveKitUrl, props.token, connectOptions).catch((error) => {
+        console.error(error);
+      });
+      room.localParticipant.enableCameraAndMicrophone().catch((error) => {
+        console.error(error);
+      });
+    }
+  }, [room, props.liveKitUrl, props.token, connectOptions, e2eeSetupComplete]);
+
+  useLowCPUOptimizer(room);
+
+  return (
+    <div className="lk-room-container">
+      <RoomContext.Provider value={room}>
+        <KeyboardShortcuts />
+        <VideoConference
+          chatMessageFormatter={formatChatMessageLinks}
+          SettingsComponent={
+            process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU === 'true' ? SettingsMenu : undefined
+          }
+        />
+        <DebugMode logLevel={LogLevel.debug} />
+      </RoomContext.Provider>
+    </div>
+  );
+}
+</file>
+
+<file path="app/rooms/[roomName]/page.tsx">
+import * as React from 'react';
+import { PageClientImpl } from './PageClientImpl';
+import { isVideoCodec } from '@/lib/types';
+
+interface PageProps {
+  params: Promise<{ roomName: string }>;
+  searchParams: Promise<{
+    region?: string;
+    hq?: string;
+    codec?: string;
+  }>;
+}
+
+export default async function Page({ params, searchParams }: PageProps) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
+  const codec =
+    typeof resolvedSearchParams.codec === 'string' && isVideoCodec(resolvedSearchParams.codec)
+      ? resolvedSearchParams.codec
+      : 'vp9';
+  const hq = resolvedSearchParams.hq === 'true' ? true : false;
+
+  return (
+    <PageClientImpl
+      roomName={resolvedParams.roomName}
+      region={resolvedSearchParams.region}
+      hq={hq}
+      codec={codec}
+    />
+  );
+}
+</file>
+
+<file path="app/layout.tsx">
+import '../styles/globals.css';
+import '@livekit/components-styles';
+import '@livekit/components-styles/prefabs';
+import type { Metadata, Viewport } from 'next';
+import { Toaster } from 'react-hot-toast';
+import { DiscordLayout } from './components/DiscordLayout';
+import { RoomProvider } from '@/lib/RoomContext';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'LiveKit Meet | Conference app build with LiveKit open source',
+    template: '%s',
+  },
+  description:
+    'LiveKit is an open source WebRTC project that gives you everything needed to build scalable and real-time audio and/or video experiences in your applications.',
+  twitter: {
+    creator: '@livekitted',
+    site: '@livekitted',
+    card: 'summary_large_image',
+  },
+  openGraph: {
+    url: 'https://meet.livekit.io',
+    images: [
+      {
+        url: 'https://meet.livekit.io/images/livekit-meet-open-graph.png',
+        width: 2000,
+        height: 1000,
+        type: 'image/png',
+      },
+    ],
+    siteName: 'LiveKit Meet',
+  },
+  icons: {
+    icon: {
+      rel: 'icon',
+      url: '/favicon.ico',
+    },
+    apple: [
+      {
+        rel: 'apple-touch-icon',
+        url: '/images/livekit-apple-touch.png',
+        sizes: '180x180',
+      },
+      { rel: 'mask-icon', url: '/images/livekit-safari-pinned-tab.svg', color: '#070707' },
+    ],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#070707',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body data-lk-theme="default">
+        <Toaster />
+        <RoomProvider>
+          <DiscordLayout>
+            {children}
+          </DiscordLayout>
+        </RoomProvider>
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="app/page.tsx">
+'use client';
+
+import { useRoomContext } from '@/lib/RoomContext';
+import { RoomContext, VideoConference, formatChatMessageLinks } from '@livekit/components-react';
+import { DebugMode } from '@/lib/Debug';
+import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
+import { RecordingIndicator } from '@/lib/RecordingIndicator';
+import { SettingsMenu } from '@/lib/SettingsMenu';
+import styles from '../styles/Discord.module.css';
+
+const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
+
+export default function HomePage() {
+  const { currentRoom, currentRoomName, isConnecting, isConnected } = useRoomContext();
+
+  if (currentRoom && isConnected) {
+    return (
+      <div className="lk-room-container" style={{ height: '100%' }}>
+        <RoomContext.Provider value={currentRoom}>
+          <KeyboardShortcuts />
+          <VideoConference
+            chatMessageFormatter={formatChatMessageLinks}
+            SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
+          />
+          <DebugMode />
+          <RecordingIndicator />
+        </RoomContext.Provider>
+      </div>
+    );
+  }
+
+  if (isConnecting) {
+    return (
+      <div className={styles.welcomeArea}>
+        <div className={styles.welcomeContent}>
+          <h1>Connecting to {currentRoomName}...</h1>
+          <p>Please wait while we connect you to the voice channel.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.welcomeArea}>
+      <div className={styles.welcomeContent}>
+        <h1>Welcome to LiveKit Meet</h1>
+        <p>Select a voice channel from the sidebar to join a conversation!</p>
+        
+        <div className={styles.features}>
+          <div className={styles.feature}>
+            <span className={styles.featureIcon}>🎥</span>
+            <div>
+              <h3>HD Video Calls</h3>
+              <p>Crystal clear video with adaptive streaming</p>
+            </div>
+          </div>
+          <div className={styles.feature}>
+            <span className={styles.featureIcon}>🔒</span>
+            <div>
+              <h3>End-to-End Encryption</h3>
+              <p>Your conversations stay private and secure</p>
+            </div>
+          </div>
+          <div className={styles.feature}>
+            <span className={styles.featureIcon}>🌐</span>
+            <div>
+              <h3>Global Infrastructure</h3>
+              <p>Low latency connections worldwide</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="lib/CameraSettings.tsx">
+import React from 'react';
+import {
+  MediaDeviceMenu,
+  TrackReference,
+  TrackToggle,
+  useLocalParticipant,
+  VideoTrack,
+} from '@livekit/components-react';
+import { BackgroundBlur, VirtualBackground } from '@livekit/track-processors';
+import { isLocalTrack, LocalTrackPublication, Track } from 'livekit-client';
+
+// Background options
+type BackgroundType = 'none' | 'blur' | 'image';
+
+export function CameraSettings() {
+  const { cameraTrack, localParticipant } = useLocalParticipant();
+  const [backgroundType, setBackgroundType] = React.useState<BackgroundType>(
+    (cameraTrack as LocalTrackPublication)?.track?.getProcessor()?.name === 'background-blur'
+      ? 'blur'
+      : (cameraTrack as LocalTrackPublication)?.track?.getProcessor()?.name === 'virtual-background'
+        ? 'image'
+        : 'none',
+  );
+
+  const [virtualBackgroundImagePath, setVirtualBackgroundImagePath] = React.useState<string | null>(
+    null,
+  );
+
+  const camTrackRef: TrackReference | undefined = React.useMemo(() => {
+    return cameraTrack
+      ? { participant: localParticipant, publication: cameraTrack, source: Track.Source.Camera }
+      : undefined;
+  }, [localParticipant, cameraTrack]);
+
+  const selectBackground = (type: BackgroundType, imagePath?: string) => {
+    setBackgroundType(type);
+    if (type === 'image' && imagePath) {
+      setVirtualBackgroundImagePath(imagePath);
+    } else if (type !== 'image') {
+      setVirtualBackgroundImagePath(null);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isLocalTrack(cameraTrack?.track)) {
+      if (backgroundType === 'blur') {
+        cameraTrack.track?.setProcessor(BackgroundBlur());
+      } else if (backgroundType === 'image' && virtualBackgroundImagePath) {
+        cameraTrack.track?.setProcessor(VirtualBackground(virtualBackgroundImagePath));
+      } else {
+        cameraTrack.track?.stopProcessor();
+      }
+    }
+  }, [cameraTrack, backgroundType, virtualBackgroundImagePath]);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {camTrackRef && (
+        <VideoTrack
+          style={{
+            maxHeight: '280px',
+            objectFit: 'contain',
+            objectPosition: 'right',
+            transform: 'scaleX(-1)',
+          }}
+          trackRef={camTrackRef}
+        />
+      )}
+
+      <section className="lk-button-group">
+        <TrackToggle source={Track.Source.Camera}>Camera</TrackToggle>
+        <div className="lk-button-group-menu">
+          <MediaDeviceMenu kind="videoinput" />
+        </div>
+      </section>
+
+      <div style={{ marginTop: '10px' }}>
+        <div style={{ marginBottom: '8px' }}>Background Effects</div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => selectBackground('none')}
+            className="lk-button"
+            aria-pressed={backgroundType === 'none'}
+            style={{
+              border: backgroundType === 'none' ? '2px solid #0090ff' : '1px solid #d1d1d1',
+              minWidth: '80px',
+            }}
+          >
+            None
+          </button>
+
+          <button
+            onClick={() => selectBackground('blur')}
+            className="lk-button"
+            aria-pressed={backgroundType === 'blur'}
+            style={{
+              border: backgroundType === 'blur' ? '2px solid #0090ff' : '1px solid #d1d1d1',
+              minWidth: '80px',
+              backgroundColor: '#f0f0f0',
+              position: 'relative',
+              overflow: 'hidden',
+              height: '60px',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: '#e0e0e0',
+                filter: 'blur(8px)',
+                zIndex: 0,
+              }}
+            />
+            <span
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                padding: '2px 5px',
+                borderRadius: '4px',
+                fontSize: '12px',
+              }}
+            >
+              Blur
+            </span>
+          </button>
+
+      
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="lib/client-utils.ts">
+export function encodePassphrase(passphrase: string) {
+  return encodeURIComponent(passphrase);
+}
+
+export function decodePassphrase(pass: string) {
+  return new Uint8Array(Buffer.from(pass, 'base64'));
+}
+
+export function generateRoomId(): string {
+  return `${randomString(4)}-${randomString(4)}`;
+}
+
+export function randomString(length: number): string {
+  let result = '';
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+export function isLowPowerDevice() {
+  return navigator.hardwareConcurrency < 6;
+}
+
+/**
+ * Diagnose media device access issues
+ */
+export async function diagnoseMediaDevices(): Promise<{
+  supported: boolean;
+  secureContext: boolean;
+  devices: MediaDeviceInfo[];
+  errors: string[];
+}> {
+  const errors: string[] = [];
+  let devices: MediaDeviceInfo[] = [];
+  
+  // Check if running in secure context
+  const secureContext = window.isSecureContext;
+  if (!secureContext) {
+    errors.push('Not running in secure context (HTTPS required for media access)');
+  }
+  
+  // Check if mediaDevices API is supported
+  const supported = !!(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices);
+  if (!supported) {
+    errors.push('MediaDevices API not supported in this browser');
+    return { supported, secureContext, devices, errors };
+  }
+  
+  try {
+    devices = await navigator.mediaDevices.enumerateDevices();
+  } catch (error) {
+    if (error instanceof DOMException) {
+      errors.push(`MediaDevices enumeration failed: ${error.name} - ${error.message}`);
+    } else {
+      errors.push(`MediaDevices enumeration failed: ${error}`);
+    }
+  }
+  
+  return { supported, secureContext, devices, errors };
+}
+
+/**
+ * Request media permissions with better error handling
+ */
+export async function requestMediaPermissions(constraints: MediaStreamConstraints = {
+  video: true,
+  audio: true
+}): Promise<{
+  stream: MediaStream | null;
+  error: string | null;
+}> {
+  try {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      return {
+        stream: null,
+        error: 'getUserMedia not supported in this browser'
+      };
+    }
+    
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    return { stream, error: null };
+  } catch (error) {
+    let errorMessage = 'Unknown media access error';
+    
+    if (error instanceof DOMException) {
+      switch (error.name) {
+        case 'NotFoundError':
+          errorMessage = 'No camera or microphone found';
+          break;
+        case 'NotAllowedError':
+          errorMessage = 'Permission denied for camera/microphone access';
+          break;
+        case 'NotSupportedError':
+          errorMessage = 'Media devices not supported';
+          break;
+        case 'NotReadableError':
+          errorMessage = 'Media device is already in use';
+          break;
+        case 'OverconstrainedError':
+          errorMessage = 'Requested media constraints cannot be satisfied';
+          break;
+        default:
+          errorMessage = `Media access error: ${error.message}`;
+      }
+    }
+    
+    return { stream: null, error: errorMessage };
+  }
+}
+</file>
+
+<file path="lib/Debug.tsx">
+import * as React from 'react';
+import { useRoomContext } from '@livekit/components-react';
+import { setLogLevel, LogLevel, RemoteTrackPublication, setLogExtension } from 'livekit-client';
+// @ts-ignore
+import { tinykeys } from 'tinykeys';
+import { datadogLogs } from '@datadog/browser-logs';
+
+import styles from '../styles/Debug.module.css';
+
+export const useDebugMode = ({ logLevel }: { logLevel?: LogLevel }) => {
+  const room = useRoomContext();
+
+  React.useEffect(() => {
+    setLogLevel(logLevel ?? 'debug');
+
+    if (process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN && process.env.NEXT_PUBLIC_DATADOG_SITE) {
+      console.log('setting up datadog logs');
+      datadogLogs.init({
+        clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN,
+        site: process.env.NEXT_PUBLIC_DATADOG_SITE,
+        forwardErrorsToLogs: true,
+        sessionSampleRate: 100,
+      });
+
+      setLogExtension((level, msg, context) => {
+        switch (level) {
+          case LogLevel.debug:
+            datadogLogs.logger.debug(msg, context);
+            break;
+          case LogLevel.info:
+            datadogLogs.logger.info(msg, context);
+            break;
+          case LogLevel.warn:
+            datadogLogs.logger.warn(msg, context);
+            break;
+          case LogLevel.error:
+            datadogLogs.logger.error(msg, context);
+            break;
+          default:
+            break;
+        }
+      });
+    }
+
+    // @ts-expect-error
+    window.__lk_room = room;
+
+    return () => {
+      // @ts-expect-error
+      window.__lk_room = undefined;
+    };
+  }, [room, logLevel]);
+};
+
+export const DebugMode = ({ logLevel }: { logLevel?: LogLevel }) => {
+  const room = useRoomContext();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [, setRender] = React.useState({});
+  const [roomSid, setRoomSid] = React.useState('');
+
+  React.useEffect(() => {
+    room.getSid().then(setRoomSid);
+  }, [room]);
+
+  useDebugMode({ logLevel });
+
+  React.useEffect(() => {
+    if (window) {
+      const unsubscribe = tinykeys(window, {
+        'Shift+D': () => {
+          console.log('setting open');
+          setIsOpen((open) => !open);
+        },
+      });
+
+      // timer to re-render
+      const interval = setInterval(() => {
+        setRender({});
+      }, 1000);
+
+      return () => {
+        unsubscribe();
+        clearInterval(interval);
+      };
+    }
+  }, [isOpen]);
+
+  if (typeof window === 'undefined' || !isOpen) {
+    return null;
+  }
+
+  const handleSimulate = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    if (value == '') {
+      return;
+    }
+    event.target.value = '';
+    let isReconnect = false;
+    switch (value) {
+      case 'signal-reconnect':
+        isReconnect = true;
+
+      // fall through
+      default:
+        // @ts-expect-error
+        room.simulateScenario(value);
+    }
+  };
+
+  const lp = room.localParticipant;
+
+  if (!isOpen) {
+    return <></>;
+  } else {
+    return (
+      <div className={styles.overlay}>
+        <section id="room-info">
+          <h3>
+            Room Info {room.name}: {roomSid}
+          </h3>
+        </section>
+        <details open>
+          <summary>
+            <b>Local Participant: {lp.identity}</b>
+          </summary>
+          <details open className={styles.detailsSection}>
+            <summary>
+              <b>Published tracks</b>
+            </summary>
+            <div>
+              {Array.from(lp.trackPublications.values()).map((t) => (
+                <>
+                  <div>
+                    <i>
+                      {t.source.toString()}
+                      &nbsp;<span>{t.trackSid}</span>
+                    </i>
+                  </div>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>Kind</td>
+                        <td>
+                          {t.kind}&nbsp;
+                          {t.kind === 'video' && (
+                            <span>
+                              {t.track?.dimensions?.width}x{t.track?.dimensions?.height}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Bitrate</td>
+                        <td>{Math.ceil(t.track!.currentBitrate / 1000)} kbps</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </>
+              ))}
+            </div>
+          </details>
+          <details open className={styles.detailsSection}>
+            <summary>
+              <b>Permissions</b>
+            </summary>
+            <div>
+              <table>
+                <tbody>
+                  {lp.permissions &&
+                    Object.entries(lp.permissions).map(([key, val]) => (
+                      <>
+                        <tr>
+                          <td>{key}</td>
+                          {key !== 'canPublishSources' ? (
+                            <td>{val.toString()}</td>
+                          ) : (
+                            <td> {val.join(', ')} </td>
+                          )}
+                        </tr>
+                      </>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </details>
+
+        <details>
+          <summary>
+            <b>Remote Participants</b>
+          </summary>
+          {Array.from(room.remoteParticipants.values()).map((p) => (
+            <details key={p.sid} className={styles.detailsSection}>
+              <summary>
+                <b>
+                  {p.identity}
+                  <span></span>
+                </b>
+              </summary>
+              <div>
+                {Array.from(p.trackPublications.values()).map((t) => (
+                  <>
+                    <div>
+                      <i>
+                        {t.source.toString()}
+                        &nbsp;<span>{t.trackSid}</span>
+                      </i>
+                    </div>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>Kind</td>
+                          <td>
+                            {t.kind}&nbsp;
+                            {t.kind === 'video' && (
+                              <span>
+                                {t.dimensions?.width}x{t.dimensions?.height}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Status</td>
+                          <td>{trackStatus(t)}</td>
+                        </tr>
+                        {t.track && (
+                          <tr>
+                            <td>Bitrate</td>
+                            <td>{Math.ceil(t.track.currentBitrate / 1000)} kbps</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </>
+                ))}
+              </div>
+            </details>
+          ))}
+        </details>
+      </div>
+    );
+  }
+};
+
+function trackStatus(t: RemoteTrackPublication): string {
+  if (t.isSubscribed) {
+    return t.isEnabled ? 'enabled' : 'disabled';
+  } else {
+    return 'unsubscribed';
+  }
+}
+</file>
+
+<file path="lib/getLiveKitURL.test.ts">
+import { describe, it, expect } from 'vitest';
+import { getLiveKitURL } from './getLiveKitURL';
+
+describe('getLiveKitURL', () => {
+  it('returns the original URL if no region is provided', () => {
+    const url = 'https://myproject.livekit.cloud';
+    expect(getLiveKitURL(url, null)).toBe(url + '/');
+  });
+
+  it('inserts the region into livekit.cloud URLs', () => {
+    const url = 'https://myproject.livekit.cloud';
+    const region = 'eu';
+    expect(getLiveKitURL(url, region)).toBe('https://myproject.eu.production.livekit.cloud/');
+  });
+
+  it('inserts the region into livekit.cloud URLs and preserves the staging environment', () => {
+    const url = 'https://myproject.staging.livekit.cloud';
+    const region = 'eu';
+    expect(getLiveKitURL(url, region)).toBe('https://myproject.eu.staging.livekit.cloud/');
+  });
+
+  it('returns the original URL for non-livekit.cloud hosts, even with region', () => {
+    const url = 'https://example.com';
+    const region = 'us';
+    expect(getLiveKitURL(url, region)).toBe(url + '/');
+  });
+
+  it('handles URLs with paths and query params', () => {
+    const url = 'https://myproject.livekit.cloud/room?foo=bar';
+    const region = 'ap';
+    expect(getLiveKitURL(url, region)).toBe(
+      'https://myproject.ap.production.livekit.cloud/room?foo=bar',
+    );
+  });
+});
+</file>
+
+<file path="lib/getLiveKitURL.ts">
+export function getLiveKitURL(projectUrl: string, region: string | null): string {
+  const url = new URL(projectUrl);
+  if (region && url.hostname.includes('livekit.cloud')) {
+    let [projectId, ...hostParts] = url.hostname.split('.');
+    if (hostParts[0] !== 'staging') {
+      hostParts = ['production', ...hostParts];
+    }
+    const regionURL = [projectId, region, ...hostParts].join('.');
+    url.hostname = regionURL;
+  }
+  return url.toString();
+}
+</file>
+
+<file path="lib/KeyboardShortcuts.tsx">
+'use client';
+
+import React from 'react';
+import { Track } from 'livekit-client';
+import { useTrackToggle } from '@livekit/components-react';
+
+export function KeyboardShortcuts() {
+  const { toggle: toggleMic } = useTrackToggle({ source: Track.Source.Microphone });
+  const { toggle: toggleCamera } = useTrackToggle({ source: Track.Source.Camera });
+
+  React.useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      // Toggle microphone: Cmd/Ctrl-Shift-A
+      if (toggleMic && event.key === 'A' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        toggleMic();
+      }
+
+      // Toggle camera: Cmd/Ctrl-Shift-V
+      if (event.key === 'V' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        toggleCamera();
+      }
+    }
+
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
+  }, [toggleMic, toggleCamera]);
+
+  return null;
+}
+</file>
+
+<file path="lib/MicrophoneSettings.tsx">
+import React from 'react';
+import { useKrispNoiseFilter } from '@livekit/components-react/krisp';
+import { TrackToggle } from '@livekit/components-react';
+import { MediaDeviceMenu } from '@livekit/components-react';
+import { Track } from 'livekit-client';
+import { isLowPowerDevice } from './client-utils';
+
+export function MicrophoneSettings() {
+  const { isNoiseFilterEnabled, setNoiseFilterEnabled, isNoiseFilterPending } = useKrispNoiseFilter(
+    {
+      filterOptions: {
+        bufferOverflowMs: 100,
+        bufferDropMs: 200,
+        quality: isLowPowerDevice() ? 'low' : 'medium',
+        onBufferDrop: () => {
+          console.warn(
+            'krisp buffer dropped, noise filter versions >= 0.3.2 will automatically disable the filter',
+          );
+        },
+      },
+    },
+  );
+
+  React.useEffect(() => {
+    // enable Krisp by default on non-low power devices
+    setNoiseFilterEnabled(!isLowPowerDevice());
+  }, []);
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '10px',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <section className="lk-button-group">
+        <TrackToggle source={Track.Source.Microphone}>Microphone</TrackToggle>
+        <div className="lk-button-group-menu">
+          <MediaDeviceMenu kind="audioinput" />
+        </div>
+      </section>
+
+      <button
+        className="lk-button"
+        onClick={() => setNoiseFilterEnabled(!isNoiseFilterEnabled)}
+        disabled={isNoiseFilterPending}
+        aria-pressed={isNoiseFilterEnabled}
+      >
+        {isNoiseFilterEnabled ? 'Disable' : 'Enable'} Enhanced Noise Cancellation
+      </button>
+    </div>
+  );
+}
+</file>
+
+<file path="lib/RecordingIndicator.tsx">
+import { useIsRecording } from '@livekit/components-react';
+import * as React from 'react';
+import toast from 'react-hot-toast';
+
+export function RecordingIndicator() {
+  const isRecording = useIsRecording();
+  const [wasRecording, setWasRecording] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isRecording !== wasRecording) {
+      setWasRecording(isRecording);
+      if (isRecording) {
+        toast('This meeting is being recorded', {
+          duration: 3000,
+          icon: '🎥',
+          position: 'top-center',
+          className: 'lk-button',
+          style: {
+            backgroundColor: 'var(--lk-danger3)',
+            color: 'var(--lk-fg)',
+          },
+        });
+      }
+    }
+  }, [isRecording]);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        boxShadow: isRecording ? 'var(--lk-danger3) 0px 0px 0px 3px inset' : 'none',
+        pointerEvents: 'none',
+      }}
+    ></div>
+  );
+}
+</file>
+
+<file path="lib/RoomContext.tsx">
+'use client';
+
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { Room, RoomOptions, RoomConnectOptions, VideoPresets, VideoCodec, ExternalE2EEKeyProvider, DeviceUnsupportedError, RoomEvent } from 'livekit-client';
+import { ConnectionDetails } from './types';
+import { useSetupE2EE } from './useSetupE2EE';
+import { useLowCPUOptimizer } from './usePerfomanceOptimiser';
+
+interface RoomContextType {
+  currentRoom: Room | null;
+  currentRoomName: string | null;
+  currentUser: string;
+  isConnecting: boolean;
+  isConnected: boolean;
+  joinRoom: (roomName: string) => Promise<void>;
+  leaveRoom: () => void;
+  error: string | null;
+}
+
+const RoomContext = createContext<RoomContextType | null>(null);
+
+export function useRoomContext() {
+  const context = useContext(RoomContext);
+  if (!context) {
+    throw new Error('useRoomContext must be used within RoomProvider');
+  }
+  return context;
+}
+
+const CONN_DETAILS_ENDPOINT = '/api/connection-details';
+
+export function RoomProvider({ children }: { children: React.ReactNode }) {
+  const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
+  const [currentRoomName, setCurrentRoomName] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<string>('');
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const keyProvider = new ExternalE2EEKeyProvider();
+  const { worker, e2eePassphrase } = useSetupE2EE();
+  const e2eeEnabled = !!(e2eePassphrase && worker);
+
+  // Get user identity from localStorage
+  const getUserIdentity = useCallback(() => {
+    if (typeof window === 'undefined') return 'User1234';
+    
+    let userId = localStorage.getItem('livekit-user-id');
+    if (!userId) {
+      userId = `User${Math.random().toString(36).substr(2, 4)}`;
+      localStorage.setItem('livekit-user-id', userId);
+    }
+    return userId;
+  }, []);
+
+  // Initialize currentUser on mount
+  useEffect(() => {
+    setCurrentUser(getUserIdentity());
+  }, [getUserIdentity]);
+
+  const createRoom = useCallback(() => {
+    const roomOptions: RoomOptions = {
+      publishDefaults: {
+        videoSimulcastLayers: [VideoPresets.h540, VideoPresets.h216],
+        red: !e2eeEnabled,
+        videoCodec: 'vp9' as VideoCodec,
+      },
+      adaptiveStream: { pixelDensity: 'screen' },
+      dynacast: true,
+      e2ee: e2eeEnabled ? { keyProvider, worker } : undefined,
+    };
+    return new Room(roomOptions);
+  }, [e2eeEnabled, keyProvider, worker]);
+
+  const joinRoom = useCallback(async (roomName: string) => {
+    try {
+      setError(null);
+      setIsConnecting(true);
+
+      // Leave current room if connected
+      if (currentRoom) {
+        currentRoom.disconnect();
+        setCurrentRoom(null);
+        setCurrentRoomName(null);
+        setIsConnected(false);
+      }
+
+      // Get connection details
+      const userIdentity = getUserIdentity();
+      const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
+      url.searchParams.append('roomName', roomName);
+      url.searchParams.append('participantName', userIdentity);
+
+      const response = await fetch(url.toString());
+      if (!response.ok) {
+        throw new Error('Failed to get connection details');
+      }
+      
+      const connectionDetails: ConnectionDetails = await response.json();
+
+      // Create and connect to new room
+      const room = createRoom();
+      
+      // Set up event listeners
+      room.on(RoomEvent.Connected, () => {
+        setIsConnected(true);
+        setIsConnecting(false);
+      });
+
+      room.on(RoomEvent.Disconnected, () => {
+        setIsConnected(false);
+        setCurrentRoom(null);
+        setCurrentRoomName(null);
+      });
+
+      room.on(RoomEvent.ParticipantDisconnected, (participant) => {
+        // Handle when other participants disconnect
+        console.log('Participant disconnected:', participant.identity);
+      });
+
+      room.on(RoomEvent.EncryptionError, (error) => {
+        console.error('Encryption error:', error);
+        setError(`Encryption error: ${error.message}`);
+      });
+
+      room.on(RoomEvent.MediaDevicesError, (error) => {
+        console.error('Media devices error:', error);
+        setError(`Media error: ${error.message}`);
+      });
+
+      // Handle E2EE setup
+      if (e2eeEnabled) {
+        await keyProvider.setKey(e2eePassphrase);
+        await room.setE2EEEnabled(true);
+      }
+
+      // Connect to room
+      const connectOptions: RoomConnectOptions = {
+        autoSubscribe: true,
+      };
+
+      await room.connect(connectionDetails.serverUrl, connectionDetails.participantToken, connectOptions);
+
+      // Enable microphone only (camera disabled by default)
+      try {
+        await room.localParticipant.setMicrophoneEnabled(true);
+        // Camera remains disabled by default
+      } catch (mediaError) {
+        console.warn('Failed to enable microphone:', mediaError);
+      }
+
+      setCurrentRoom(room);
+      setCurrentRoomName(roomName);
+
+    } catch (err) {
+      console.error('Failed to join room:', err);
+      setError(err instanceof Error ? err.message : 'Failed to join room');
+      setIsConnecting(false);
+    }
+  }, [currentRoom, getUserIdentity, createRoom, e2eeEnabled, keyProvider, e2eePassphrase, worker]);
+
+  const leaveRoom = useCallback(() => {
+    if (currentRoom) {
+      currentRoom.disconnect();
+      setCurrentRoom(null);
+      setCurrentRoomName(null);
+      setIsConnected(false);
+    }
+  }, [currentRoom]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (currentRoom) {
+        currentRoom.disconnect();
+      }
+    };
+  }, [currentRoom]);
+
+  // Use performance optimizer if room exists
+  useLowCPUOptimizer(currentRoom);
+
+  const value: RoomContextType = {
+    currentRoom,
+    currentRoomName,
+    currentUser,
+    isConnecting,
+    isConnected,
+    joinRoom,
+    leaveRoom,
+    error,
+  };
+
+  return (
+    <RoomContext.Provider value={value}>
+      {children}
+    </RoomContext.Provider>
+  );
+}
+</file>
+
+<file path="lib/SettingsMenu.tsx">
+'use client';
+import * as React from 'react';
+import { Track } from 'livekit-client';
+import {
+  useMaybeLayoutContext,
+  MediaDeviceMenu,
+  TrackToggle,
+  useRoomContext,
+  useIsRecording,
+} from '@livekit/components-react';
+import styles from '../styles/SettingsMenu.module.css';
+import { CameraSettings } from './CameraSettings';
+import { MicrophoneSettings } from './MicrophoneSettings';
+/**
+ * @alpha
+ */
+export interface SettingsMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+/**
+ * @alpha
+ */
+export function SettingsMenu(props: SettingsMenuProps) {
+  const layoutContext = useMaybeLayoutContext();
+  const room = useRoomContext();
+  const recordingEndpoint = process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT;
+
+  const settings = React.useMemo(() => {
+    return {
+      media: { camera: true, microphone: true, label: 'Media Devices', speaker: true },
+      recording: recordingEndpoint ? { label: 'Recording' } : undefined,
+    };
+  }, []);
+
+  const tabs = React.useMemo(
+    () => Object.keys(settings).filter((t) => t !== undefined) as Array<keyof typeof settings>,
+    [settings],
+  );
+  const [activeTab, setActiveTab] = React.useState(tabs[0]);
+
+  const isRecording = useIsRecording();
+  const [initialRecStatus, setInitialRecStatus] = React.useState(isRecording);
+  const [processingRecRequest, setProcessingRecRequest] = React.useState(false);
+
+  React.useEffect(() => {
+    if (initialRecStatus !== isRecording) {
+      setProcessingRecRequest(false);
+    }
+  }, [isRecording, initialRecStatus]);
+
+  const toggleRoomRecording = async () => {
+    if (!recordingEndpoint) {
+      throw TypeError('No recording endpoint specified');
+    }
+    if (room.isE2EEEnabled) {
+      throw Error('Recording of encrypted meetings is currently not supported');
+    }
+    setProcessingRecRequest(true);
+    setInitialRecStatus(isRecording);
+    let response: Response;
+    if (isRecording) {
+      response = await fetch(recordingEndpoint + `/stop?roomName=${room.name}`);
+    } else {
+      response = await fetch(recordingEndpoint + `/start?roomName=${room.name}`);
+    }
+    if (response.ok) {
+    } else {
+      console.error(
+        'Error handling recording request, check server logs:',
+        response.status,
+        response.statusText,
+      );
+      setProcessingRecRequest(false);
+    }
+  };
+
+  return (
+    <div className="settings-menu" style={{ width: '100%', position: 'relative' }} {...props}>
+      <div className={styles.tabs}>
+        {tabs.map(
+          (tab) =>
+            settings[tab] && (
+              <button
+                className={`${styles.tab} lk-button`}
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                aria-pressed={tab === activeTab}
+              >
+                {
+                  // @ts-ignore
+                  settings[tab].label
+                }
+              </button>
+            ),
+        )}
+      </div>
+      <div className="tab-content">
+        {activeTab === 'media' && (
+          <>
+            {settings.media && settings.media.camera && (
+              <>
+                <h3>Camera</h3>
+                <section>
+                  <CameraSettings />
+                </section>
+              </>
+            )}
+            {settings.media && settings.media.microphone && (
+              <>
+                <h3>Microphone</h3>
+                <section>
+                  <MicrophoneSettings />
+                </section>
+              </>
+            )}
+            {settings.media && settings.media.speaker && (
+              <>
+                <h3>Speaker & Headphones</h3>
+                <section className="lk-button-group">
+                  <span className="lk-button">Audio Output</span>
+                  <div className="lk-button-group-menu">
+                    <MediaDeviceMenu kind="audiooutput"></MediaDeviceMenu>
+                  </div>
+                </section>
+              </>
+            )}
+          </>
+        )}
+        {activeTab === 'recording' && (
+          <>
+            <h3>Record Meeting</h3>
+            <section>
+              <p>
+                {isRecording
+                  ? 'Meeting is currently being recorded'
+                  : 'No active recordings for this meeting'}
+              </p>
+              <button disabled={processingRecRequest} onClick={() => toggleRoomRecording()}>
+                {isRecording ? 'Stop' : 'Start'} Recording
+              </button>
+            </section>
+          </>
+        )}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+        <button
+          className={`lk-button`}
+          onClick={() => layoutContext?.widget.dispatch?.({ msg: 'toggle_settings' })}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="lib/supabase.ts">
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
+});
+
+// Presence channel for voice rooms
+export const getVoiceRoomPresence = (roomId: string) => {
+  return supabase.channel(`voice-room-${roomId}`, {
+    config: {
+      presence: {
+        key: roomId,
+      },
+    },
+  });
+};
+</file>
+
+<file path="lib/types.ts">
+import { LocalAudioTrack, LocalVideoTrack, videoCodecs } from 'livekit-client';
+import { VideoCodec } from 'livekit-client';
+
+export interface SessionProps {
+  roomName: string;
+  identity: string;
+  audioTrack?: LocalAudioTrack;
+  videoTrack?: LocalVideoTrack;
+  region?: string;
+  turnServer?: RTCIceServer;
+  forceRelay?: boolean;
+}
+
+export interface TokenResult {
+  identity: string;
+  accessToken: string;
+}
+
+export function isVideoCodec(codec: string): codec is VideoCodec {
+  return videoCodecs.includes(codec as VideoCodec);
+}
+
+export type ConnectionDetails = {
+  serverUrl: string;
+  roomName: string;
+  participantName: string;
+  participantToken: string;
+};
+</file>
+
+<file path="lib/useGlobalVoicePresence.ts">
+'use client';
+
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { getVoiceRoomPresence } from './supabase';
+import { useRoomContext } from './RoomContext';
+
+interface VoiceRoomUser {
+  id: string;
+  name: string;
+  joinedAt: string;
+}
+
+interface VoiceRoomPresence {
+  [roomId: string]: VoiceRoomUser[];
+}
+
+const roomIds = ['general-voice', 'gaming-lounge', 'study-hall', 'music-jam', 'dev-talk'];
+
+export function useGlobalVoicePresence() {
+  const { currentRoomName, currentUser, isConnected } = useRoomContext();
+  const [presence, setPresence] = useState<VoiceRoomPresence>({});
+  const channelsRef = useRef<{[roomId: string]: any}>({});
+  const currentUserRoomRef = useRef<string | null>(null);
+
+  // Initialize all room channels
+  useEffect(() => {
+    roomIds.forEach(roomId => {
+      if (!channelsRef.current[roomId]) {
+        const channel = getVoiceRoomPresence(roomId);
+        channelsRef.current[roomId] = channel;
+
+        channel.subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log(`Subscribed to presence channel: ${roomId}`);
+          }
+        });
+
+        channel.on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState();
+          const users = Object.values(state).map(user => user[0] as unknown as VoiceRoomUser);
+          setPresence(prev => ({
+            ...prev,
+            [roomId]: users,
+          }));
+        });
+
+        channel.on('presence', { event: 'join' }, ({ newPresences }) => {
+          const newUsers = newPresences as unknown as VoiceRoomUser[];
+          setPresence(prev => ({
+            ...prev,
+            [roomId]: [...(prev[roomId] || []).filter(u => !newUsers.some(nu => nu.id === u.id)), ...newUsers],
+          }));
+        });
+
+        channel.on('presence', { event: 'leave' }, ({ leftPresences }) => {
+          const leftUsers = leftPresences as unknown as VoiceRoomUser[];
+          setPresence(prev => ({
+            ...prev,
+            [roomId]: (prev[roomId] || []).filter(
+              user => !leftUsers.some(leftUser => leftUser.id === user.id)
+            ),
+          }));
+        });
+      }
+    });
+
+    return () => {
+      Object.values(channelsRef.current).forEach(channel => {
+        channel?.unsubscribe();
+      });
+      channelsRef.current = {};
+    };
+  }, []);
+
+  // Track user presence in current room
+  useEffect(() => {
+    const trackUserPresence = async () => {
+      // Remove user from previous room
+      if (currentUserRoomRef.current && channelsRef.current[currentUserRoomRef.current]) {
+        console.log(`Removing user from: ${currentUserRoomRef.current}`);
+        await channelsRef.current[currentUserRoomRef.current].untrack();
+      }
+
+      // Add user to current room
+      if (currentRoomName && currentUser && isConnected && channelsRef.current[currentRoomName]) {
+        console.log(`Adding user to: ${currentRoomName}`);
+        await channelsRef.current[currentRoomName].track({
+          id: currentUser,
+          name: currentUser,
+          joinedAt: new Date().toISOString(),
+        });
+        currentUserRoomRef.current = currentRoomName;
+      } else if (!isConnected && currentUserRoomRef.current) {
+        // User disconnected, remove from all rooms
+        console.log('User disconnected, removing from all rooms');
+        currentUserRoomRef.current = null;
+      }
+    };
+
+    trackUserPresence();
+  }, [currentRoomName, currentUser, isConnected]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (currentUserRoomRef.current && channelsRef.current[currentUserRoomRef.current]) {
+        channelsRef.current[currentUserRoomRef.current].untrack();
+      }
+    };
+  }, []);
+
+  return {
+    presence,
+  };
+}
+</file>
+
+<file path="lib/usePerfomanceOptimiser.ts">
+import {
+  Room,
+  ParticipantEvent,
+  RoomEvent,
+  RemoteTrack,
+  RemoteTrackPublication,
+  VideoQuality,
+  LocalVideoTrack,
+  isVideoTrack,
+} from 'livekit-client';
+import * as React from 'react';
+
+export type LowCPUOptimizerOptions = {
+  reducePublisherVideoQuality: boolean;
+  reduceSubscriberVideoQuality: boolean;
+  disableVideoProcessing: boolean;
+};
+
+const defaultOptions: LowCPUOptimizerOptions = {
+  reducePublisherVideoQuality: true,
+  reduceSubscriberVideoQuality: true,
+  disableVideoProcessing: false,
+} as const;
+
+/**
+ * This hook ensures that on devices with low CPU, the performance is optimised when needed.
+ * This is done by primarily reducing the video quality to low when the CPU is constrained.
+ */
+export function useLowCPUOptimizer(room: Room | null, options: Partial<LowCPUOptimizerOptions> = {}) {
+  const [lowPowerMode, setLowPowerMode] = React.useState(false);
+  const opts = React.useMemo(() => ({ ...defaultOptions, ...options }), [options]);
+  React.useEffect(() => {
+    if (!room || !room.localParticipant) {
+      return;
+    }
+
+    const handleCpuConstrained = async (track: LocalVideoTrack) => {
+      setLowPowerMode(true);
+      console.warn('Local track CPU constrained', track);
+      if (opts.reducePublisherVideoQuality) {
+        track.prioritizePerformance();
+      }
+      if (opts.disableVideoProcessing && isVideoTrack(track)) {
+        track.stopProcessor();
+      }
+      if (opts.reduceSubscriberVideoQuality) {
+        room.remoteParticipants.forEach((participant) => {
+          participant.videoTrackPublications.forEach((publication) => {
+            publication.setVideoQuality(VideoQuality.LOW);
+          });
+        });
+      }
+    };
+
+    room.localParticipant.on(ParticipantEvent.LocalTrackCpuConstrained, handleCpuConstrained);
+    return () => {
+      room.localParticipant.off(ParticipantEvent.LocalTrackCpuConstrained, handleCpuConstrained);
+    };
+  }, [room, opts.reducePublisherVideoQuality, opts.reduceSubscriberVideoQuality]);
+
+  React.useEffect(() => {
+    if (!room) {
+      return;
+    }
+
+    const lowerQuality = (_: RemoteTrack, publication: RemoteTrackPublication) => {
+      publication.setVideoQuality(VideoQuality.LOW);
+    };
+    if (lowPowerMode && opts.reduceSubscriberVideoQuality) {
+      room.on(RoomEvent.TrackSubscribed, lowerQuality);
+    }
+
+    return () => {
+      room.off(RoomEvent.TrackSubscribed, lowerQuality);
+    };
+  }, [lowPowerMode, room, opts.reduceSubscriberVideoQuality]);
+
+  return lowPowerMode;
+}
+</file>
+
+<file path="lib/useSetupE2EE.ts">
+import React from 'react';
+import { ExternalE2EEKeyProvider } from 'livekit-client';
+import { decodePassphrase } from './client-utils';
+
+export function useSetupE2EE() {
+  const e2eePassphrase =
+    typeof window !== 'undefined' ? decodePassphrase(location.hash.substring(1)) : undefined;
+
+  const worker: Worker | undefined =
+    typeof window !== 'undefined' && e2eePassphrase
+      ? new Worker(new URL('livekit-client/e2ee-worker', import.meta.url))
+      : undefined;
+
+  return { worker, e2eePassphrase };
+}
+</file>
+
+<file path="lib/useVoiceRoomPresence.ts">
+'use client';
+
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { getVoiceRoomPresence } from './supabase';
+import { useRoomContext } from './RoomContext';
+
+interface VoiceRoomUser {
+  id: string;
+  name: string;
+  joinedAt: string;
+}
+
+interface VoiceRoomPresence {
+  [roomId: string]: VoiceRoomUser[];
+}
+
+export function useVoiceRoomPresence() {
+  const { currentRoomName, currentUser, isConnected } = useRoomContext();
+  const [presence, setPresence] = useState<VoiceRoomPresence>({});
+  const [isPresenceConnected, setIsPresenceConnected] = useState(false);
+  const currentChannelRef = useRef<any>(null);
+  const currentRoomRef = useRef<string | null>(null);
+
+  const leaveCurrentRoom = useCallback(async () => {
+    if (currentChannelRef.current) {
+      console.log('Leaving presence channel:', currentRoomRef.current);
+      await currentChannelRef.current.untrack();
+      await currentChannelRef.current.unsubscribe();
+      currentChannelRef.current = null;
+      currentRoomRef.current = null;
+      setIsPresenceConnected(false);
+    }
+  }, []);
+
+  const joinVoiceRoom = useCallback(async (roomId: string, userName: string) => {
+    // Always leave current room first
+    await leaveCurrentRoom();
+
+    console.log('Joining presence channel:', roomId);
+    const channel = getVoiceRoomPresence(roomId);
+    currentChannelRef.current = channel;
+    currentRoomRef.current = roomId;
+    
+    await channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        console.log('Subscribed to channel, tracking presence for:', userName);
+        await channel.track({
+          id: userName,
+          name: userName,
+          joinedAt: new Date().toISOString(),
+        });
+        setIsPresenceConnected(true);
+      }
+    });
+
+    // Listen for all presence events for all rooms
+    channel.on('presence', { event: 'sync' }, () => {
+      console.log('Presence sync for room:', roomId);
+      const state = channel.presenceState();
+      const users = Object.values(state).map(user => user[0] as unknown as VoiceRoomUser);
+      setPresence(prev => ({
+        ...prev,
+        [roomId]: users,
+      }));
+    });
+
+    channel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
+      console.log('User joined room:', roomId, newPresences);
+      const newUsers = newPresences as unknown as VoiceRoomUser[];
+      setPresence(prev => ({
+        ...prev,
+        [roomId]: [...(prev[roomId] || []).filter(u => !newUsers.some(nu => nu.id === u.id)), ...newUsers],
+      }));
+    });
+
+    channel.on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+      console.log('User left room:', roomId, leftPresences);
+      const leftUsers = leftPresences as unknown as VoiceRoomUser[];
+      setPresence(prev => ({
+        ...prev,
+        [roomId]: (prev[roomId] || []).filter(
+          user => !leftUsers.some(leftUser => leftUser.id === user.id)
+        ),
+      }));
+    });
+
+    return channel;
+  }, [leaveCurrentRoom]);
+
+  // Handle room changes and disconnections
+  useEffect(() => {
+    if (currentRoomName && currentUser && isConnected) {
+      // Only join if we're not already in this room
+      if (currentRoomRef.current !== currentRoomName) {
+        console.log('Room changed from', currentRoomRef.current, 'to', currentRoomName);
+        joinVoiceRoom(currentRoomName, currentUser);
+      }
+    } else if (!isConnected) {
+      // Leave room when disconnected
+      console.log('Disconnected from LiveKit, leaving presence');
+      leaveCurrentRoom();
+    }
+  }, [currentRoomName, currentUser, isConnected, joinVoiceRoom, leaveCurrentRoom]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      leaveCurrentRoom();
+    };
+  }, [leaveCurrentRoom]);
+
+  return {
+    presence,
+    isConnected: isPresenceConnected,
+    joinVoiceRoom,
+    leaveVoiceRoom: leaveCurrentRoom,
+  };
+}
+</file>
+
+<file path="public/images/livekit-meet-home.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="961" height="121" fill="none"><path fill="#fff" d="M20.2 0H0v118.1h73.4V101H20.2V0ZM106.9 53.8H87.2V118H107V53.8ZM164.6 115.8l-25-81.5H120l26.2 83.8H183l26.2-83.8h-19.8l-24.8 81.5ZM257.8 32.5c-25.4 0-41.6 18-41.6 43.7 0 25.5 15.7 43.8 41.6 43.8 19.8 0 34-8.7 39.4-26.6h-20c-3 8.1-8.4 13-19.2 13-12 0-20.3-8.3-21.9-24.5h62.5c.3-2 .5-4.1.5-6.2 0-26.1-16.3-43.2-41.3-43.2Zm-21.5 35.9c2-15 10-22.2 21.5-22.2 12.1 0 20.3 8.8 21.2 22.2h-42.7ZM413.8 0h-25.5l-49.2 54V0h-20.3v118.1h20.3V58.4l54.3 59.7h25.9L362.5 56l51.3-56ZM447.7 34.3H428v64.4h19.7V34.3ZM87.2 34.3H67.6v19.5h19.6V34.3ZM467.3 98.7h-19.6v19.4h19.6V98.7ZM525.9 98.7h-19.6v19.4h19.6V98.7ZM525.9 53.8V34.3h-19.6V0h-19.7v34.3H467v19.5h19.6v44.9h19.7v-45h19.6Z"/><path fill="#FF6352" d="M589.8 119V.4h-10.7V119h10.7Zm53.9 0L602.3.4H591L632.4 119h11.3Zm12.3 0L697.3.4h-11.2L644.7 119H656Zm53.2 0V.4h-10.6V119h10.6Zm99.4-42.9c0-25.6-16.4-41.8-38.4-41.8-23 0-38.7 17.5-38.7 43.2 0 25.9 15.6 43.2 39.2 43.2 18 0 31.3-8.4 36.2-26h-10.6c-3.6 11.4-11.7 18.2-25.6 18.2-16.4 0-27.8-11.8-28.7-32.7h66.3c.1-1.8.3-2.7.3-4.1Zm-38.4-34c16 0 26.8 12.8 27.8 30.1H742c1.7-18.9 12.4-30.1 28.1-30.1Zm130.4 34c0-25.6-16.4-41.8-38.4-41.8-23 0-38.7 17.5-38.7 43.2 0 25.9 15.6 43.2 39.2 43.2 18 0 31.3-8.4 36.2-26h-10.6c-3.6 11.4-11.7 18.2-25.6 18.2-16.4 0-27.8-11.8-28.7-32.7h66.3c.1-1.8.3-2.7.3-4.1Zm-38.4-34c16 0 26.9 12.8 27.8 30.1H834c1.8-18.9 12.4-30.1 28.1-30.1Zm88.3 69c-8.7 0-13.5-3.5-13.5-13.2V44h22.9v-8h-23V16.4h-10.2V36H908v8h18.6v53.9c0 14.4 9.3 21.1 22.9 21.1H960v-8h-9.5Z"/></svg>
+</file>
+
+<file path="public/images/livekit-safari-pinned-tab.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" fill="none"><path fill="#000" fill-rule="evenodd" d="M0 0h512v512H0zm288 224h-64v64h64v64H160V96H96v320h192v-64h64v64h64v-64h-64v-64h-64v-64h64v-64h64V96h-64v64h-64z" clip-rule="evenodd"/></svg>
+</file>
+
+<file path="styles/Debug.module.css">
+.overlay {
+  position: absolute;
+  top: 0;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1rem;
+  max-height: min(100%, 100vh);
+  overflow-y: auto;
+}
+
+.detailsSection {
+  padding-left: 1rem;
+}
+
+.detailsSection > div {
+  padding-left: 1rem;
+}
+</file>
+
+<file path="styles/Discord.module.css">
+.discordContainer {
+  display: flex;
+  height: 100vh;
+  background: #36393f;
+  color: #dcddde;
+  font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 72px;
+  background: #202225;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  border-right: 1px solid #2f3136;
+}
+
+.serverIcon {
+  width: 48px;
+  height: 48px;
+  background: #5865f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-radius 0.2s ease;
+  margin-bottom: 8px;
+}
+
+.serverIcon:hover {
+  border-radius: 16px;
+  background: #4752c4;
+}
+
+.serverIcon img {
+  filter: brightness(0) invert(1);
+}
+
+.channelList {
+  width: 240px;
+  background: #2f3136;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #202225;
+}
+
+.serverHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid #202225;
+  box-shadow: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05), 0 2px 0 rgba(4, 4, 5, 0.05);
+}
+
+.serverHeader h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.channelCategory {
+  flex: 1;
+  padding: 16px 8px 0;
+  overflow-y: auto;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e9297;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.addChannelButton {
+  background: none;
+  border: none;
+  color: #8e9297;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: color 0.2s ease;
+}
+
+.addChannelButton:hover {
+  color: #dcddde;
+}
+
+.channelsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.voiceChannel {
+  margin-bottom: 8px;
+}
+
+.channelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  group: hover;
+}
+
+.channelHeader:hover {
+  background: #34373c;
+}
+
+.channelInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  color: #8e9297;
+}
+
+.channelName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #8e9297;
+}
+
+.joinButton {
+  background: #5865f2;
+  border: none;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0;
+  margin-left: auto;
+  transition: all 0.2s ease;
+}
+
+.channelHeader:hover .joinButton {
+  opacity: 1;
+}
+
+.activeChannel {
+  background: #393c43 !important;
+}
+
+.activeChannel .channelName {
+  color: #ffffff !important;
+}
+
+.joinButton:hover {
+  background: #4752c4;
+}
+
+.channelUsers {
+  padding: 4px 8px 8px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.channelUser {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #8e9297;
+}
+
+.userAvatar {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #5865f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 12px;
+  color: #8e9297;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.avatarInner {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #5865f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+}
+
+.onlineIndicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: #3ba55c;
+  border: 2px solid #2f3136;
+  border-radius: 50%;
+}
+
+.userArea {
+  background: #292b2f;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid #202225;
+}
+
+.userInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 18px;
+}
+
+.userStatus {
+  font-size: 12px;
+  color: #3ba55c;
+  line-height: 16px;
+}
+
+.userControls {
+  display: flex;
+  gap: 4px;
+}
+
+.controlButton {
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.controlButton:hover {
+  background: #36393f;
+}
+
+.mainContent {
+  flex: 1;
+  background: #36393f;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentArea {
+  flex: 1;
+  overflow: hidden;
+}
+
+.welcomeArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.welcomeContent {
+  text-align: center;
+  max-width: 600px;
+}
+
+.welcomeContent h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+
+.welcomeContent p {
+  font-size: 16px;
+  color: #b9bbbe;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.quickActions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.quickJoinButton,
+.createRoomButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quickJoinButton {
+  background: #5865f2;
+  color: white;
+}
+
+.quickJoinButton:hover {
+  background: #4752c4;
+  transform: translateY(-1px);
+}
+
+.createRoomButton {
+  background: #3ba55c;
+  color: white;
+}
+
+.createRoomButton:hover {
+  background: #2d7d32;
+  transform: translateY(-1px);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: #2f3136;
+  border-radius: 8px;
+  border: 1px solid #202225;
+}
+
+.featureIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.feature h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.feature p {
+  margin: 0;
+  font-size: 14px;
+  color: #b9bbbe;
+  line-height: 1.4;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #36393f;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+}
+
+.modal h3 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  background: #40444b;
+  color: #dcddde;
+  font-size: 16px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: 2px solid #5865f2;
+}
+
+.input::placeholder {
+  color: #72767d;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancelButton,
+.createButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancelButton {
+  background: transparent;
+  color: #b9bbbe;
+}
+
+.cancelButton:hover {
+  background: #4f545c;
+}
+
+.createButton {
+  background: #5865f2;
+  color: white;
+}
+
+.createButton:hover {
+  background: #4752c4;
+}
+
+@media (max-width: 768px) {
+  .discordContainer {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    justify-content: center;
+    padding: 8px;
+  }
+  
+  .channelList {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .mainContent {
+    padding-bottom: 52px;
+  }
+  
+  .features {
+    grid-template-columns: 1fr;
+  }
+  
+  .quickActions {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</file>
+
+<file path="styles/globals.css">
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background-color: #111;
+}
+
+html,
+body {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  max-width: 500px;
+  padding-inline: 2rem;
+}
+
+.header > img {
+  display: block;
+  margin: auto;
+  max-width: 100%;
+}
+
+.header > h2 {
+  font-family: 'TWK Everett', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 144%;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+footer {
+  width: 100%;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  background-color: var(--lk-bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+footer a,
+h2 a {
+  color: #ff6352;
+  text-decoration-color: #a33529;
+  text-underline-offset: 0.125em;
+}
+
+footer a:hover,
+h2 a {
+  text-decoration-color: #ff6352;
+}
+
+h2 a {
+  text-decoration: none;
+}
+</file>
+
+<file path="styles/Home.module.css">
+.main {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  justify-content: center;
+  place-content: center;
+  justify-items: center;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.tabContainer {
+  width: 100%;
+  max-width: 500px;
+  padding-inline: 2rem;
+}
+
+.tabSelect {
+  display: flex;
+  justify-content: stretch;
+  gap: 0.125rem;
+  padding: 0.125rem;
+  margin: 0 auto 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+}
+
+.tabSelect > * {
+  width: 100%;
+}
+
+.tabContent {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+}
+</file>
+
+<file path="styles/SettingsMenu.module.css">
+.tabs {
+  position: relative;
+  display: flex;
+  align-content: space-between;
+}
+
+.tabs > .tab {
+  padding: 0.5rem;
+  border-radius: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid;
+  border-color: var(--bg5);
+}
+
+.tabs > .tab[aria-pressed='true'] {
+  border-color: var(--lk-accent-bg);
+}
+</file>
+
+<file path="styles/VoiceStatusBar.module.css">
+.voiceStatusBar {
+  position: relative;
+  height: 52px;
+  background: #292b2f;
+  border-top: 1px solid #202225;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  color: #dcddde;
+  margin-bottom: 0;
+}
+
+.connectionInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3ba55c;
+}
+
+.connectionText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.status {
+  font-size: 8px;
+  font-weight: 600;
+  color: #3ba55c;
+}
+
+.roomName {
+  font-size: 12px;
+  color: #b9bbbe;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 4px;
+  background: #4f545c;
+  color: #dcddde;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.controlButton:hover {
+  background: #5865f2;
+}
+
+.controlButton.muted {
+  background: #ed4245;
+  color: white;
+}
+
+.controlButton.muted:hover {
+  background: #c23b3e;
+}
+
+.controlButton.disabled {
+  background: #ed4245;
+  color: white;
+}
+
+.controlButton.disabled:hover {
+  background: #c23b3e;
+}
+
+.controlButton.active {
+  background: #3ba55c;
+  color: white;
+}
+
+.controlButton.active:hover {
+  background: #2d7d32;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.leaveButton {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  background: #4f545c;
+  color: #dcddde;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.leaveButton:hover {
+  background: #ed4245;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .voiceStatusBar {
+    padding: 0 12px;
+  }
+  
+  .controls {
+    gap: 4px;
+  }
+  
+  .controlButton {
+    width: 32px;
+    height: 32px;
+  }
+}
+</file>
+
+<file path=".env.example">
+# 1. Copy this file and rename it to .env.local
+# 2. Update the enviroment variables below.
+
+# REQUIRED SETTINGS
+# ################# 
+# If you are using LiveKit Cloud, the API key and secret can be generated from the Cloud Dashboard.
+LIVEKIT_API_KEY=
+LIVEKIT_API_SECRET=
+# URL pointing to the LiveKit server. (example: `wss://my-livekit-project.livekit.cloud`)
+LIVEKIT_URL=
+
+
+# OPTIONAL SETTINGS
+# ################# 
+# Recording
+# S3_KEY_ID=
+# S3_KEY_SECRET=
+# S3_ENDPOINT=
+# S3_BUCKET=
+# S3_REGION=
+
+# PUBLIC
+# Uncomment settings menu when using a LiveKit Cloud, it'll enable Krisp noise filters.
+# NEXT_PUBLIC_SHOW_SETTINGS_MENU=true
+# NEXT_PUBLIC_LK_RECORD_ENDPOINT=/api/record
+
+# Optional, to pipe logs to datadog
+# NEXT_PUBLIC_DATADOG_CLIENT_TOKEN=client-token
+# NEXT_PUBLIC_DATADOG_SITE=datadog-site
+</file>
+
+<file path=".eslintrc.json">
+{
+  "extends": "next/core-web-vitals"
+}
+</file>
+
+<file path=".gitattributes">
+public/background-images/*.jpg filter=lfs diff=lfs merge=lfs -text
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+.env
+</file>
+
+<file path=".prettierignore">
+.github/
+.next/
+node_modules/
+</file>
+
+<file path=".prettierrc">
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "semi": true,
+  "tabWidth": 2,
+  "printWidth": 100
+}
+</file>
+
+<file path="LICENSE">
+Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+</file>
+
+<file path="next-env.d.ts">
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+</file>
+
+<file path="next.config.js">
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: false,
+  productionBrowserSourceMaps: true,
+  images: {
+    formats: ['image/webp'],
+  },
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }) => {
+    // Important: return the modified config
+    config.module.rules.push({
+      test: /\.mjs$/,
+      enforce: 'pre',
+      use: ['source-map-loader'],
+    });
+
+    // Ignore source map warnings for @mediapipe/tasks-vision
+    config.ignoreWarnings = [
+      {
+        module: /@mediapipe\/tasks-vision/,
+        message: /Failed to parse source map/,
+      },
+    ];
+
+    return config;
+  },
+  headers: async () => {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'credentialless',
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;
+</file>
+
+<file path="package.json">
+{
+  "name": "livekit-meet",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "test": "vitest run",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "format:write": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "dependencies": {
+    "@datadog/browser-logs": "^5.23.3",
+    "@livekit/components-react": "2.9.13",
+    "@livekit/components-styles": "1.1.6",
+    "@livekit/krisp-noise-filter": "0.3.4",
+    "@livekit/track-processors": "^0.5.4",
+    "@supabase/supabase-js": "^2.53.0",
+    "livekit-client": "2.15.2",
+    "livekit-server-sdk": "2.13.1",
+    "next": "15.2.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-hot-toast": "^2.5.2",
+    "tinykeys": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.31",
+    "@types/react": "18.3.23",
+    "@types/react-dom": "18.3.7",
+    "eslint": "9.29.0",
+    "eslint-config-next": "15.3.3",
+    "prettier": "3.5.3",
+    "source-map-loader": "^5.0.0",
+    "typescript": "5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.9.0"
+}
+</file>
+
+<file path="README.md">
+<a href="https://livekit.io/">
+  <img src="./.github/assets/livekit-mark.png" alt="LiveKit logo" width="100" height="100">
+</a>
+
+# LiveKit Meet
+
+A Discord-like voice chat application built with LiveKit and Next.js.
+
+## Features
+
+- Real-time voice and video communication
+- Discord-like UI with sidebar navigation
+- Voice channel presence tracking with Supabase Realtime
+- End-to-end encryption support
+- Screen sharing capabilities
+- Noise suppression
+
+## Setup
+
+### Prerequisites
+
+- Node.js 18+
+- LiveKit Cloud account
+- Supabase account (for presence tracking)
+
+### Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```bash
+# LiveKit Configuration
+NEXT_PUBLIC_LIVEKIT_URL=your_livekit_url
+LIVEKIT_API_KEY=your_livekit_api_key
+LIVEKIT_API_SECRET=your_livekit_api_secret
+
+# Supabase Configuration (for presence tracking)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Supabase Setup
+
+1. Create a new Supabase project
+2. Enable Realtime in your Supabase dashboard
+3. Add the environment variables to your `.env.local` file
+4. The presence tracking will automatically work once configured
+
+### Installation
+
+```bash
+npm install
+npm run dev
+```
+
+## Voice Channel Presence
+
+The app uses Supabase Realtime to track who is currently in each voice channel. Users will automatically appear in the sidebar when they join a voice channel and disappear when they leave.
+
+## Development
+
+```bash
+npm run dev
+npm run build
+npm run lint
+```
+</file>
+
+<file path="renovate.json">
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "schedule": "before 6am on the first day of the month",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "devDependencies (non-major)"
+    },
+    {
+      "matchSourceUrlPrefixes": ["https://github.com/livekit/"],
+      "rangeStrategy": "replace",
+      "groupName": "LiveKit dependencies (non-major)",
+      "automerge": true
+    }
+  ]
+}
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["dom", "dom.iterable", "ES2020"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ES2020",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "sourceMap": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="app/rooms/[roomName]/PageClientImpl.tsx">
+'use client';
+
+import React from 'react';
+import { decodePassphrase } from '@/lib/client-utils';
+import { DebugMode } from '@/lib/Debug';
+import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
+import { RecordingIndicator } from '@/lib/RecordingIndicator';
+import { SettingsMenu } from '@/lib/SettingsMenu';
+import { ConnectionDetails } from '@/lib/types';
+import {
+  formatChatMessageLinks,
+  LocalUserChoices,
+  PreJoin,
+  RoomContext,
+  VideoConference,
+} from '@livekit/components-react';
+import {
+  ExternalE2EEKeyProvider,
+  RoomOptions,
+  VideoCodec,
+  VideoPresets,
+  Room,
+  DeviceUnsupportedError,
+  RoomConnectOptions,
+  RoomEvent,
+  TrackPublishDefaults,
+  VideoCaptureOptions,
+} from 'livekit-client';
+import { useRouter } from 'next/navigation';
+import { useSetupE2EE } from '@/lib/useSetupE2EE';
+import { useLowCPUOptimizer } from '@/lib/usePerfomanceOptimiser';
+
+const CONN_DETAILS_ENDPOINT =
+  process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
+const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
+
+export function PageClientImpl(props: {
+  roomName: string;
+  region?: string;
+  hq: boolean;
+  codec: VideoCodec;
+}) {
+  // Auto-generate user choices to skip prejoin
+  const preJoinChoices = React.useMemo((): LocalUserChoices => {
+    return {
+      username: `User${Math.random().toString(36).substr(2, 4)}`,
+      videoEnabled: true,
+      audioEnabled: true,
+      videoDeviceId: '',
+      audioDeviceId: '',
+    };
+  }, []);
+  
+  const [connectionDetails, setConnectionDetails] = React.useState<ConnectionDetails | undefined>(
+    undefined,
+  );
+
+  // Auto-connect on mount
+  React.useEffect(() => {
+    const autoConnect = async () => {
+      const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
+      url.searchParams.append('roomName', props.roomName);
+      url.searchParams.append('participantName', preJoinChoices.username);
+      if (props.region) {
+        url.searchParams.append('region', props.region);
+      }
+      try {
+        const connectionDetailsResp = await fetch(url.toString());
+        const connectionDetailsData = await connectionDetailsResp.json();
+        setConnectionDetails(connectionDetailsData);
+      } catch (error) {
+        console.error('Failed to get connection details:', error);
+      }
+    };
+    
+    autoConnect();
+  }, [props.roomName, props.region, preJoinChoices.username]);
+
+  return (
+    <div style={{ height: '100%' }}>
+      {connectionDetails === undefined ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <div>Connecting to room...</div>
+        </div>
+      ) : (
+        <VideoConferenceComponent
+          connectionDetails={connectionDetails}
+          userChoices={preJoinChoices}
+          options={{ codec: props.codec, hq: props.hq }}
+        />
+      )}
+    </div>
+  );
+}
+
+function VideoConferenceComponent(props: {
+  userChoices: LocalUserChoices;
+  connectionDetails: ConnectionDetails;
+  options: {
+    hq: boolean;
+    codec: VideoCodec;
+  };
+}) {
+  const keyProvider = new ExternalE2EEKeyProvider();
+  const { worker, e2eePassphrase } = useSetupE2EE();
+  const e2eeEnabled = !!(e2eePassphrase && worker);
+
+  const [e2eeSetupComplete, setE2eeSetupComplete] = React.useState(false);
+
+  const roomOptions = React.useMemo((): RoomOptions => {
+    let videoCodec: VideoCodec | undefined = props.options.codec ? props.options.codec : 'vp9';
+    if (e2eeEnabled && (videoCodec === 'av1' || videoCodec === 'vp9')) {
+      videoCodec = undefined;
+    }
+    const videoCaptureDefaults: VideoCaptureOptions = {
+      deviceId: props.userChoices.videoDeviceId ?? undefined,
+      resolution: props.options.hq ? VideoPresets.h2160 : VideoPresets.h720,
+    };
+    const publishDefaults: TrackPublishDefaults = {
+      dtx: false,
+      videoSimulcastLayers: props.options.hq
+        ? [VideoPresets.h1080, VideoPresets.h720]
+        : [VideoPresets.h540, VideoPresets.h216],
+      red: !e2eeEnabled,
+      videoCodec,
+    };
+    return {
+      videoCaptureDefaults: videoCaptureDefaults,
+      publishDefaults: publishDefaults,
+      audioCaptureDefaults: {
+        deviceId: props.userChoices.audioDeviceId ?? undefined,
+      },
+      adaptiveStream: true,
+      dynacast: true,
+      e2ee: keyProvider && worker && e2eeEnabled ? { keyProvider, worker } : undefined,
+    };
+  }, [props.userChoices, props.options.hq, props.options.codec]);
+
+  const room = React.useMemo(() => new Room(roomOptions), []);
+
+  React.useEffect(() => {
+    if (e2eeEnabled) {
+      keyProvider
+        .setKey(e2eePassphrase)
+        .then(() => {
+          room.setE2EEEnabled(true).catch((e) => {
+            if (e instanceof DeviceUnsupportedError) {
+              alert(
+                `You're trying to join an encrypted meeting, but your browser does not support it. Please update it to the latest version and try again.`,
+              );
+              console.error(e);
+            } else {
+              throw e;
+            }
+          });
+        })
+        .then(() => setE2eeSetupComplete(true));
+    } else {
+      setE2eeSetupComplete(true);
+    }
+  }, [e2eeEnabled, room, e2eePassphrase]);
+
+  const connectOptions = React.useMemo((): RoomConnectOptions => {
+    return {
+      autoSubscribe: true,
+    };
+  }, []);
+
+  React.useEffect(() => {
+    room.on(RoomEvent.Disconnected, handleOnLeave);
+    room.on(RoomEvent.EncryptionError, handleEncryptionError);
+    room.on(RoomEvent.MediaDevicesError, handleError);
+
+    if (e2eeSetupComplete) {
+      room
+        .connect(
+          props.connectionDetails.serverUrl,
+          props.connectionDetails.participantToken,
+          connectOptions,
+        )
+        .catch((error) => {
+          handleError(error);
+        });
+      if (props.userChoices.videoEnabled) {
+        room.localParticipant.setCameraEnabled(true).catch((error) => {
+          console.warn('Failed to enable camera:', error);
+          // Don't show alert for camera errors, just log them
+        });
+      }
+      if (props.userChoices.audioEnabled) {
+        room.localParticipant.setMicrophoneEnabled(true).catch((error) => {
+          console.warn('Failed to enable microphone:', error);
+          // Don't show alert for microphone errors, just log them
+        });
+      }
+    }
+    return () => {
+      room.off(RoomEvent.Disconnected, handleOnLeave);
+      room.off(RoomEvent.EncryptionError, handleEncryptionError);
+      room.off(RoomEvent.MediaDevicesError, handleError);
+    };
+  }, [e2eeSetupComplete, room, props.connectionDetails, props.userChoices]);
+
+  const lowPowerMode = useLowCPUOptimizer(room);
+
+  const router = useRouter();
+  const handleOnLeave = React.useCallback(() => router.push('/'), [router]);
+  const handleError = React.useCallback((error: Error) => {
+    console.error(error);
+    alert(`Encountered an unexpected error, check the console logs for details: ${error.message}`);
+  }, []);
+  const handleEncryptionError = React.useCallback((error: Error) => {
+    console.error(error);
+    alert(
+      `Encountered an unexpected encryption error, check the console logs for details: ${error.message}`,
+    );
+  }, []);
+
+  React.useEffect(() => {
+    if (lowPowerMode) {
+      console.warn('Low power mode enabled');
+    }
+  }, [lowPowerMode]);
+
+  return (
+    <div className="lk-room-container">
+      <RoomContext.Provider value={room}>
+        <KeyboardShortcuts />
+        <VideoConference
+          chatMessageFormatter={formatChatMessageLinks}
+          SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
+        />
+        <DebugMode />
+        <RecordingIndicator />
+      </RoomContext.Provider>
+    </div>
+  );
+}
+</file>
+
+</files>

@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { decodePassphrase } from '@/lib/client-utils';
-import { DebugMode } from '@/lib/Debug';
-import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
-import { RecordingIndicator } from '@/lib/RecordingIndicator';
-import { SettingsMenu } from '@/lib/SettingsMenu';
-import { ConnectionDetails } from '@/lib/types';
+import { decodePassphrase } from '@/lib/livekit/client-utils';
+import { DebugMode } from '@/lib/livekit/Debug';
+import { KeyboardShortcuts } from '@/lib/livekit/KeyboardShortcuts';
+import { RecordingIndicator } from '@/lib/livekit/RecordingIndicator';
+import { SettingsMenu } from '@/lib/livekit/SettingsMenu';
+import { ConnectionDetails } from '@/lib/livekit/types';
 import {
   formatChatMessageLinks,
   LocalUserChoices,
@@ -27,8 +27,8 @@ import {
   VideoCaptureOptions,
 } from 'livekit-client';
 import { useRouter } from 'next/navigation';
-import { useSetupE2EE } from '@/lib/useSetupE2EE';
-import { useLowCPUOptimizer } from '@/lib/usePerfomanceOptimiser';
+import { useSetupE2EE } from '@/lib/livekit/useSetupE2EE';
+import { useLowCPUOptimizer } from '@/lib/livekit/usePerfomanceOptimiser';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';

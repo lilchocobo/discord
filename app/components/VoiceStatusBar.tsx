@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRoomContext } from '@/lib/RoomContext';
+import { useRoomContext } from '@/lib/livekit/RoomContext';
 import { Track } from 'livekit-client';
 import { useTrackToggle, useLocalParticipant } from '@livekit/components-react';
 import styles from '../../styles/VoiceStatusBar.module.css';
