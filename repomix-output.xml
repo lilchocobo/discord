@@ -68,22 +68,23 @@ app/
   layout.tsx
   page.tsx
 lib/
-  CameraSettings.tsx
-  client-utils.ts
-  Debug.tsx
-  getLiveKitURL.test.ts
-  getLiveKitURL.ts
-  KeyboardShortcuts.tsx
-  MicrophoneSettings.tsx
-  RecordingIndicator.tsx
-  RoomContext.tsx
-  SettingsMenu.tsx
-  supabase.ts
-  types.ts
-  useGlobalVoicePresence.ts
-  usePerfomanceOptimiser.ts
-  useSetupE2EE.ts
-  useVoiceRoomPresence.ts
+  livekit/
+    CameraSettings.tsx
+    client-utils.ts
+    Debug.tsx
+    getLiveKitURL.test.ts
+    getLiveKitURL.ts
+    KeyboardShortcuts.tsx
+    MicrophoneSettings.tsx
+    RecordingIndicator.tsx
+    RoomContext.tsx
+    SettingsMenu.tsx
+    supabase.ts
+    types.ts
+    useGlobalVoicePresence.ts
+    usePerfomanceOptimiser.ts
+    useSetupE2EE.ts
+    useVoiceRoomPresence.ts
 public/
   images/
     livekit-meet-home.svg
@@ -218,98 +219,6 @@ jobs:
       run: pnpm test
 </file>
 
-<file path="app/api/connection-details/route.ts">
-import { randomString } from '@/lib/client-utils';
-import { getLiveKitURL } from '@/lib/getLiveKitURL';
-import { ConnectionDetails } from '@/lib/types';
-import { AccessToken, AccessTokenOptions, VideoGrant } from 'livekit-server-sdk';
-import { NextRequest, NextResponse } from 'next/server';
-
-const API_KEY = process.env.LIVEKIT_API_KEY;
-const API_SECRET = process.env.LIVEKIT_API_SECRET;
-const LIVEKIT_URL = process.env.LIVEKIT_URL;
-
-const COOKIE_KEY = 'random-participant-postfix';
-
-export async function GET(request: NextRequest) {
-  try {
-    // Parse query parameters
-    const roomName = request.nextUrl.searchParams.get('roomName');
-    const participantName = request.nextUrl.searchParams.get('participantName');
-    const metadata = request.nextUrl.searchParams.get('metadata') ?? '';
-    const region = request.nextUrl.searchParams.get('region');
-    if (!LIVEKIT_URL) {
-      throw new Error('LIVEKIT_URL is not defined');
-    }
-    const livekitServerUrl = region ? getLiveKitURL(LIVEKIT_URL, region) : LIVEKIT_URL;
-    let randomParticipantPostfix = request.cookies.get(COOKIE_KEY)?.value;
-    if (livekitServerUrl === undefined) {
-      throw new Error('Invalid region');
-    }
-
-    if (typeof roomName !== 'string') {
-      return new NextResponse('Missing required query parameter: roomName', { status: 400 });
-    }
-    if (participantName === null) {
-      return new NextResponse('Missing required query parameter: participantName', { status: 400 });
-    }
-
-    // Generate participant token
-    if (!randomParticipantPostfix) {
-      randomParticipantPostfix = randomString(4);
-    }
-    const participantToken = await createParticipantToken(
-      {
-        identity: `${participantName}__${randomParticipantPostfix}`,
-        name: participantName,
-        metadata,
-      },
-      roomName,
-    );
-
-    // Return connection details
-    const data: ConnectionDetails = {
-      serverUrl: livekitServerUrl,
-      roomName: roomName,
-      participantToken: participantToken,
-      participantName: participantName,
-    };
-    return new NextResponse(JSON.stringify(data), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Set-Cookie': `${COOKIE_KEY}=${randomParticipantPostfix}; Path=/; HttpOnly; SameSite=Strict; Secure; Expires=${getCookieExpirationTime()}`,
-      },
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      return new NextResponse(error.message, { status: 500 });
-    }
-  }
-}
-
-function createParticipantToken(userInfo: AccessTokenOptions, roomName: string) {
-  const at = new AccessToken(API_KEY, API_SECRET, userInfo);
-  at.ttl = '5m';
-  const grant: VideoGrant = {
-    room: roomName,
-    roomJoin: true,
-    canPublish: true,
-    canPublishData: true,
-    canSubscribe: true,
-  };
-  at.addGrant(grant);
-  return at.toJwt();
-}
-
-function getCookieExpirationTime(): string {
-  var now = new Date();
-  var time = now.getTime();
-  var expireTime = time + 60 * 120 * 1000;
-  now.setTime(expireTime);
-  return now.toUTCString();
-}
-</file>
-
 <file path="app/api/record/start/route.ts">
 import { EgressClient, EncodedFileOutput, S3Upload } from 'livekit-server-sdk';
 import { NextRequest, NextResponse } from 'next/server';
@@ -425,722 +334,7 @@ export async function GET(req: NextRequest) {
 }
 </file>
 
-<file path="app/components/DiscordLayout.tsx">
-'use client';
-
-import { useRouter, usePathname } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
-import { generateRoomId, randomString } from '@/lib/client-utils';
-import { useRoomContext } from '@/lib/RoomContext';
-import { VoiceStatusBar } from './VoiceStatusBar';
-import { RoomContext } from '@livekit/components-react';
-import { useGlobalVoicePresence } from '@/lib/useGlobalVoicePresence';
-import styles from '../../styles/Discord.module.css';
-
-interface Room {
-  id: string;
-  name: string;
-}
-
-// Available rooms - in real app this would come from your backend
-const mockRooms: Room[] = [
-  { id: 'general-voice', name: 'General' },
-  { id: 'gaming-lounge', name: 'Gaming Lounge' },
-  { id: 'study-hall', name: 'Study Hall' },
-  { id: 'music-jam', name: 'Music Jam' },
-  { id: 'dev-talk', name: 'Dev Talk' },
-];
-
-function VoiceChannelIcon({ isActive }: { isActive: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 21H5V3H13V9H19Z"/>
-    </svg>
-  );
-}
-
-function UserAvatar({ name }: { name: string }) {
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
-  return (
-    <div className={styles.avatar}>
-      <div className={styles.avatarInner}>
-        {initials}
-      </div>
-      <div className={styles.onlineIndicator} />
-    </div>
-  );
-}
-
-function VoiceChannel({ room, onJoin, isActive, presence }: { 
-  room: Room; 
-  onJoin: (roomId: string) => void; 
-  isActive: boolean;
-  presence: {[roomId: string]: any[]};
-}) {
-  const roomUsers = presence[room.id] || [];
-  
-  return (
-    <div className={styles.voiceChannel}>
-      <div 
-        className={`${styles.channelHeader} ${isActive ? styles.activeChannel : ''}`}
-        onClick={() => onJoin(room.id)}
-      >
-        <div className={styles.channelInfo}>
-          <VoiceChannelIcon isActive={isActive} />
-          <span className={styles.channelName}>{room.name}</span>
-        </div>
-        <button className={styles.joinButton}>
-          Join
-        </button>
-      </div>
-      
-      {/* Show users in the channel */}
-      {roomUsers.length > 0 && (
-        <div className={styles.channelUsers}>
-          {roomUsers.map(user => (
-            <div key={user.id} className={styles.channelUser}>
-              <div className={styles.userAvatar}>
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <span className={styles.userName}>{user.name}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CreateRoomModal({ isOpen, onClose, onCreateRoom }: {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreateRoom: (name: string) => void;
-}) {
-  const [roomName, setRoomName] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (roomName.trim()) {
-      onCreateRoom(roomName.trim());
-      setRoomName('');
-      onClose();
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <h3>Create Voice Channel</h3>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Channel name"
-            value={roomName}
-            onChange={(e) => setRoomName(e.target.value)}
-            className={styles.input}
-            autoFocus
-          />
-          <div className={styles.modalButtons}>
-            <button type="button" onClick={onClose} className={styles.cancelButton}>
-              Cancel
-            </button>
-            <button type="submit" className={styles.createButton}>
-              Create Channel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-export function DiscordLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { currentRoomName, joinRoom, isConnecting, currentRoom, isConnected, leaveRoom } = useRoomContext();
-  const [rooms, setRooms] = useState<Room[]>(mockRooms);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [currentUser, setCurrentUser] = useState<string>('');
-  
-  // Initialize global presence tracking
-  const { presence } = useGlobalVoicePresence();
-
-  // Get user identity from localStorage on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      let userId = localStorage.getItem('livekit-user-id');
-      if (!userId) {
-        userId = `User${Math.random().toString(36).substr(2, 4)}`;
-        localStorage.setItem('livekit-user-id', userId);
-      }
-      setCurrentUser(userId);
-    }
-  }, []);
-
-  const handleJoinRoom = async (roomId: string) => {
-    try {
-      // If already in a room, leave it first
-      if (currentRoomName && currentRoomName !== roomId) {
-        await leaveRoom();
-      }
-      
-      await joinRoom(roomId);
-      // Navigate to home to show the room content
-      router.push('/');
-    } catch (error) {
-      console.error('Failed to join room:', error);
-    }
-  };
-
-  const handleCreateRoom = (name: string) => {
-    const newRoomId = generateRoomId();
-    const newRoom: Room = {
-      id: newRoomId,
-      name,
-    };
-    setRooms(prev => [...prev, newRoom]);
-    handleJoinRoom(newRoomId);
-  };
-
-  return (
-    <div className={styles.discordContainer} data-lk-theme="default">
-      <div className={styles.sidebar}>
-        <div className={styles.serverIcon}>
-          <img src="/images/livekit-meet-home.svg" alt="LiveKit Meet" width="32" height="32" />
-        </div>
-      </div>
-
-      <div className={styles.channelList}>
-        <div className={styles.serverHeader}>
-          <h2>LiveKit Meet</h2>
-        </div>
-
-        <div className={styles.channelCategory}>
-          <div className={styles.categoryHeader}>
-            <span>VOICE CHANNELS</span>
-            <button 
-              className={styles.addChannelButton}
-              onClick={() => setShowCreateModal(true)}
-              title="Create Channel"
-            >
-              +
-            </button>
-          </div>
-
-          <div className={styles.channelsList}>
-            {rooms.map(room => (
-              <VoiceChannel
-                key={room.id}
-                room={room}
-                onJoin={handleJoinRoom}
-                isActive={room.id === currentRoomName}
-                presence={presence}
-              />
-            ))}
-          </div>
-        </div>
-
-        {currentRoom && isConnected ? (
-          <RoomContext.Provider value={currentRoom}>
-            <VoiceStatusBar />
-          </RoomContext.Provider>
-        ) : (
-          <VoiceStatusBar />
-        )}
-
-        <div className={styles.userArea}>
-          <UserAvatar name={currentUser} />
-          <div className={styles.userInfo}>
-            <span className={styles.username}>{currentUser}</span>
-            <span className={styles.userStatus}>Online</span>
-          </div>
-          <div className={styles.userControls}>
-            <button className={styles.controlButton} title="Mute">🎤</button>
-            <button className={styles.controlButton} title="Deafen">🎧</button>
-            <button className={styles.controlButton} title="Settings">⚙️</button>
-          </div>
-        </div>
-        
-     
-      </div>
-
-      <div className={styles.mainContent}>
-        <div className={styles.contentArea}>
-          {children}
-        </div>
-      </div>
-
-      <CreateRoomModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onCreateRoom={handleCreateRoom}
-      />
-    </div>
-  );
-}
-</file>
-
-<file path="app/components/VoiceStatusBar.tsx">
-'use client';
-
-import React from 'react';
-import { useRoomContext } from '@/lib/RoomContext';
-import { Track } from 'livekit-client';
-import { useTrackToggle, useLocalParticipant } from '@livekit/components-react';
-import styles from '../../styles/VoiceStatusBar.module.css';
-
-function VoiceConnectedIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-    </svg>
-  );
-}
-
-function MicIcon({ muted }: { muted: boolean }) {
-  if (muted) {
-    return (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.24-5.3-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c.57-.08 1.12-.23 1.64-.46l2.92 2.92L19 20.46 4.27 3z"/>
-      </svg>
-    );
-  }
-  
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-    </svg>
-  );
-}
-
-function CameraIcon({ disabled }: { disabled: boolean }) {
-  if (disabled) {
-    return (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2zM5 16V8h1.73l8 8H5z"/>
-      </svg>
-    );
-  }
-  
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-    </svg>
-  );
-}
-
-function ScreenShareIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
-    </svg>
-  );
-}
-
-
-function VoiceStatusBarInner() {
-  const { currentRoomName, leaveRoom } = useRoomContext();
-  
-  const { localParticipant } = useLocalParticipant();
-  
-  const { toggle: toggleMic, enabled: micEnabled } = useTrackToggle({ 
-    source: Track.Source.Microphone 
-  });
-  const { toggle: toggleCamera, enabled: cameraEnabled } = useTrackToggle({ 
-    source: Track.Source.Camera 
-  });
-  const { toggle: toggleScreenShare, enabled: screenShareEnabled } = useTrackToggle({ 
-    source: Track.Source.ScreenShare 
-  });
-
-  return (
-    <div className={styles.voiceStatusBar}>
-      <div className={styles.connectionInfo}>
-        <VoiceConnectedIcon />
-        <div className={styles.connectionText}>
-          <span className={styles.status}>Connected</span>
-          <span className={styles.roomName}>{currentRoomName}</span>
-        </div>
-      </div>
-
-      <div className={styles.controls}>
-        <button 
-          className={`${styles.controlButton} ${styles.smallButton} ${!micEnabled ? styles.muted : ''}`}
-          onClick={() => toggleMic()}
-          title={micEnabled ? 'Mute' : 'Unmute'}
-          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
-        >
-          <MicIcon muted={!micEnabled} />
-        </button>
-
-        <button 
-          className={`${styles.controlButton} ${styles.smallButton} ${!cameraEnabled ? styles.disabled : ''}`}
-          onClick={() => toggleCamera()}
-          title={cameraEnabled ? 'Turn off camera' : 'Turn on camera'}
-          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
-        >
-          <CameraIcon disabled={!cameraEnabled} />
-        </button>
-
-        <button 
-          className={`${styles.controlButton} ${styles.smallButton} ${screenShareEnabled ? styles.active : ''}`}
-          onClick={() => toggleScreenShare()}
-          title={screenShareEnabled ? 'Stop sharing' : 'Share screen'}
-          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
-        >
-          <ScreenShareIcon />
-        </button>
-
-      </div>
-
-      <div className={styles.actions}>
-        <button 
-          className={styles.leaveButton}
-          onClick={leaveRoom}
-          title="Leave voice channel"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export function VoiceStatusBar() {
-  const { currentRoomName, isConnected, leaveRoom } = useRoomContext();
-  
-  // Only render when connected to a room
-  if (!currentRoomName || !isConnected) {
-    return null;
-  }
-
-  return <VoiceStatusBarInner />;
-}
-</file>
-
-<file path="app/custom/page.tsx">
-import { videoCodecs } from 'livekit-client';
-import { VideoConferenceClientImpl } from './VideoConferenceClientImpl';
-import { isVideoCodec } from '@/lib/types';
-
-interface PageProps {
-  searchParams: Promise<{
-    liveKitUrl?: string;
-    token?: string;
-    codec?: string;
-  }>;
-}
-
-export default async function CustomRoomConnection({ searchParams }: PageProps) {
-  const resolvedSearchParams = await searchParams;
-  const { liveKitUrl, token, codec } = resolvedSearchParams;
-  
-  if (typeof liveKitUrl !== 'string') {
-    return <h2>Missing LiveKit URL</h2>;
-  }
-  if (typeof token !== 'string') {
-    return <h2>Missing LiveKit token</h2>;
-  }
-  if (codec !== undefined && !isVideoCodec(codec)) {
-    return <h2>Invalid codec, if defined it has to be [{videoCodecs.join(', ')}].</h2>;
-  }
-
-  return (
-    <main data-lk-theme="default" style={{ height: '100%' }}>
-      <VideoConferenceClientImpl liveKitUrl={liveKitUrl} token={token} codec={codec} />
-    </main>
-  );
-}
-</file>
-
-<file path="app/custom/VideoConferenceClientImpl.tsx">
-'use client';
-
-import { formatChatMessageLinks, RoomContext, VideoConference } from '@livekit/components-react';
-import {
-  ExternalE2EEKeyProvider,
-  LogLevel,
-  Room,
-  RoomConnectOptions,
-  RoomOptions,
-  VideoPresets,
-  type VideoCodec,
-} from 'livekit-client';
-import { DebugMode } from '@/lib/Debug';
-import { useEffect, useMemo, useState } from 'react';
-import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
-import { SettingsMenu } from '@/lib/SettingsMenu';
-import { useSetupE2EE } from '@/lib/useSetupE2EE';
-import { useLowCPUOptimizer } from '@/lib/usePerfomanceOptimiser';
-
-export function VideoConferenceClientImpl(props: {
-  liveKitUrl: string;
-  token: string;
-  codec: VideoCodec | undefined;
-}) {
-  const keyProvider = new ExternalE2EEKeyProvider();
-  const { worker, e2eePassphrase } = useSetupE2EE();
-  const e2eeEnabled = !!(e2eePassphrase && worker);
-
-  const [e2eeSetupComplete, setE2eeSetupComplete] = useState(false);
-
-  const roomOptions = useMemo((): RoomOptions => {
-    return {
-      publishDefaults: {
-        videoSimulcastLayers: [VideoPresets.h540, VideoPresets.h216],
-        red: !e2eeEnabled,
-        videoCodec: props.codec,
-      },
-      adaptiveStream: { pixelDensity: 'screen' },
-      dynacast: true,
-      e2ee: e2eeEnabled
-        ? {
-            keyProvider,
-            worker,
-          }
-        : undefined,
-    };
-  }, [e2eeEnabled, props.codec, keyProvider, worker]);
-
-  const room = useMemo(() => new Room(roomOptions), [roomOptions]);
-
-  const connectOptions = useMemo((): RoomConnectOptions => {
-    return {
-      autoSubscribe: true,
-    };
-  }, []);
-
-  useEffect(() => {
-    if (e2eeEnabled) {
-      keyProvider.setKey(e2eePassphrase).then(() => {
-        room.setE2EEEnabled(true).then(() => {
-          setE2eeSetupComplete(true);
-        });
-      });
-    } else {
-      setE2eeSetupComplete(true);
-    }
-  }, [e2eeEnabled, e2eePassphrase, keyProvider, room, setE2eeSetupComplete]);
-
-  useEffect(() => {
-    if (e2eeSetupComplete) {
-      room.connect(props.liveKitUrl, props.token, connectOptions).catch((error) => {
-        console.error(error);
-      });
-      room.localParticipant.enableCameraAndMicrophone().catch((error) => {
-        console.error(error);
-      });
-    }
-  }, [room, props.liveKitUrl, props.token, connectOptions, e2eeSetupComplete]);
-
-  useLowCPUOptimizer(room);
-
-  return (
-    <div className="lk-room-container">
-      <RoomContext.Provider value={room}>
-        <KeyboardShortcuts />
-        <VideoConference
-          chatMessageFormatter={formatChatMessageLinks}
-          SettingsComponent={
-            process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU === 'true' ? SettingsMenu : undefined
-          }
-        />
-        <DebugMode logLevel={LogLevel.debug} />
-      </RoomContext.Provider>
-    </div>
-  );
-}
-</file>
-
-<file path="app/rooms/[roomName]/page.tsx">
-import * as React from 'react';
-import { PageClientImpl } from './PageClientImpl';
-import { isVideoCodec } from '@/lib/types';
-
-interface PageProps {
-  params: Promise<{ roomName: string }>;
-  searchParams: Promise<{
-    region?: string;
-    hq?: string;
-    codec?: string;
-  }>;
-}
-
-export default async function Page({ params, searchParams }: PageProps) {
-  const resolvedParams = await params;
-  const resolvedSearchParams = await searchParams;
-  
-  const codec =
-    typeof resolvedSearchParams.codec === 'string' && isVideoCodec(resolvedSearchParams.codec)
-      ? resolvedSearchParams.codec
-      : 'vp9';
-  const hq = resolvedSearchParams.hq === 'true' ? true : false;
-
-  return (
-    <PageClientImpl
-      roomName={resolvedParams.roomName}
-      region={resolvedSearchParams.region}
-      hq={hq}
-      codec={codec}
-    />
-  );
-}
-</file>
-
-<file path="app/layout.tsx">
-import '../styles/globals.css';
-import '@livekit/components-styles';
-import '@livekit/components-styles/prefabs';
-import type { Metadata, Viewport } from 'next';
-import { Toaster } from 'react-hot-toast';
-import { DiscordLayout } from './components/DiscordLayout';
-import { RoomProvider } from '@/lib/RoomContext';
-
-export const metadata: Metadata = {
-  title: {
-    default: 'LiveKit Meet | Conference app build with LiveKit open source',
-    template: '%s',
-  },
-  description:
-    'LiveKit is an open source WebRTC project that gives you everything needed to build scalable and real-time audio and/or video experiences in your applications.',
-  twitter: {
-    creator: '@livekitted',
-    site: '@livekitted',
-    card: 'summary_large_image',
-  },
-  openGraph: {
-    url: 'https://meet.livekit.io',
-    images: [
-      {
-        url: 'https://meet.livekit.io/images/livekit-meet-open-graph.png',
-        width: 2000,
-        height: 1000,
-        type: 'image/png',
-      },
-    ],
-    siteName: 'LiveKit Meet',
-  },
-  icons: {
-    icon: {
-      rel: 'icon',
-      url: '/favicon.ico',
-    },
-    apple: [
-      {
-        rel: 'apple-touch-icon',
-        url: '/images/livekit-apple-touch.png',
-        sizes: '180x180',
-      },
-      { rel: 'mask-icon', url: '/images/livekit-safari-pinned-tab.svg', color: '#070707' },
-    ],
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: '#070707',
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body data-lk-theme="default">
-        <Toaster />
-        <RoomProvider>
-          <DiscordLayout>
-            {children}
-          </DiscordLayout>
-        </RoomProvider>
-      </body>
-    </html>
-  );
-}
-</file>
-
-<file path="app/page.tsx">
-'use client';
-
-import { useRoomContext } from '@/lib/RoomContext';
-import { RoomContext, VideoConference, formatChatMessageLinks } from '@livekit/components-react';
-import { DebugMode } from '@/lib/Debug';
-import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
-import { RecordingIndicator } from '@/lib/RecordingIndicator';
-import { SettingsMenu } from '@/lib/SettingsMenu';
-import styles from '../styles/Discord.module.css';
-
-const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
-
-export default function HomePage() {
-  const { currentRoom, currentRoomName, isConnecting, isConnected } = useRoomContext();
-
-  if (currentRoom && isConnected) {
-    return (
-      <div className="lk-room-container" style={{ height: '100%' }}>
-        <RoomContext.Provider value={currentRoom}>
-          <KeyboardShortcuts />
-          <VideoConference
-            chatMessageFormatter={formatChatMessageLinks}
-            SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
-          />
-          <DebugMode />
-          <RecordingIndicator />
-        </RoomContext.Provider>
-      </div>
-    );
-  }
-
-  if (isConnecting) {
-    return (
-      <div className={styles.welcomeArea}>
-        <div className={styles.welcomeContent}>
-          <h1>Connecting to {currentRoomName}...</h1>
-          <p>Please wait while we connect you to the voice channel.</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.welcomeArea}>
-      <div className={styles.welcomeContent}>
-        <h1>Welcome to LiveKit Meet</h1>
-        <p>Select a voice channel from the sidebar to join a conversation!</p>
-        
-        <div className={styles.features}>
-          <div className={styles.feature}>
-            <span className={styles.featureIcon}>🎥</span>
-            <div>
-              <h3>HD Video Calls</h3>
-              <p>Crystal clear video with adaptive streaming</p>
-            </div>
-          </div>
-          <div className={styles.feature}>
-            <span className={styles.featureIcon}>🔒</span>
-            <div>
-              <h3>End-to-End Encryption</h3>
-              <p>Your conversations stay private and secure</p>
-            </div>
-          </div>
-          <div className={styles.feature}>
-            <span className={styles.featureIcon}>🌐</span>
-            <div>
-              <h3>Global Infrastructure</h3>
-              <p>Low latency connections worldwide</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-</file>
-
-<file path="lib/CameraSettings.tsx">
+<file path="lib/livekit/CameraSettings.tsx">
 import React from 'react';
 import {
   MediaDeviceMenu,
@@ -1279,7 +473,7 @@ export function CameraSettings() {
 }
 </file>
 
-<file path="lib/client-utils.ts">
+<file path="lib/livekit/client-utils.ts">
 export function encodePassphrase(passphrase: string) {
   return encodeURIComponent(passphrase);
 }
@@ -1394,7 +588,7 @@ export async function requestMediaPermissions(constraints: MediaStreamConstraint
 }
 </file>
 
-<file path="lib/Debug.tsx">
+<file path="lib/livekit/Debug.tsx">
 import * as React from 'react';
 import { useRoomContext } from '@livekit/components-react';
 import { setLogLevel, LogLevel, RemoteTrackPublication, setLogExtension } from 'livekit-client';
@@ -1402,7 +596,7 @@ import { setLogLevel, LogLevel, RemoteTrackPublication, setLogExtension } from '
 import { tinykeys } from 'tinykeys';
 import { datadogLogs } from '@datadog/browser-logs';
 
-import styles from '../styles/Debug.module.css';
+import styles from '../../styles/Debug.module.css';
 
 export const useDebugMode = ({ logLevel }: { logLevel?: LogLevel }) => {
   const room = useRoomContext();
@@ -1648,7 +842,7 @@ function trackStatus(t: RemoteTrackPublication): string {
 }
 </file>
 
-<file path="lib/getLiveKitURL.test.ts">
+<file path="lib/livekit/getLiveKitURL.test.ts">
 import { describe, it, expect } from 'vitest';
 import { getLiveKitURL } from './getLiveKitURL';
 
@@ -1686,7 +880,7 @@ describe('getLiveKitURL', () => {
 });
 </file>
 
-<file path="lib/getLiveKitURL.ts">
+<file path="lib/livekit/getLiveKitURL.ts">
 export function getLiveKitURL(projectUrl: string, region: string | null): string {
   const url = new URL(projectUrl);
   if (region && url.hostname.includes('livekit.cloud')) {
@@ -1701,7 +895,7 @@ export function getLiveKitURL(projectUrl: string, region: string | null): string
 }
 </file>
 
-<file path="lib/KeyboardShortcuts.tsx">
+<file path="lib/livekit/KeyboardShortcuts.tsx">
 'use client';
 
 import React from 'react';
@@ -1735,7 +929,7 @@ export function KeyboardShortcuts() {
 }
 </file>
 
-<file path="lib/MicrophoneSettings.tsx">
+<file path="lib/livekit/MicrophoneSettings.tsx">
 import React from 'react';
 import { useKrispNoiseFilter } from '@livekit/components-react/krisp';
 import { TrackToggle } from '@livekit/components-react';
@@ -1793,7 +987,7 @@ export function MicrophoneSettings() {
 }
 </file>
 
-<file path="lib/RecordingIndicator.tsx">
+<file path="lib/livekit/RecordingIndicator.tsx">
 import { useIsRecording } from '@livekit/components-react';
 import * as React from 'react';
 import toast from 'react-hot-toast';
@@ -1836,209 +1030,7 @@ export function RecordingIndicator() {
 }
 </file>
 
-<file path="lib/RoomContext.tsx">
-'use client';
-
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Room, RoomOptions, RoomConnectOptions, VideoPresets, VideoCodec, ExternalE2EEKeyProvider, DeviceUnsupportedError, RoomEvent } from 'livekit-client';
-import { ConnectionDetails } from './types';
-import { useSetupE2EE } from './useSetupE2EE';
-import { useLowCPUOptimizer } from './usePerfomanceOptimiser';
-
-interface RoomContextType {
-  currentRoom: Room | null;
-  currentRoomName: string | null;
-  currentUser: string;
-  isConnecting: boolean;
-  isConnected: boolean;
-  joinRoom: (roomName: string) => Promise<void>;
-  leaveRoom: () => void;
-  error: string | null;
-}
-
-const RoomContext = createContext<RoomContextType | null>(null);
-
-export function useRoomContext() {
-  const context = useContext(RoomContext);
-  if (!context) {
-    throw new Error('useRoomContext must be used within RoomProvider');
-  }
-  return context;
-}
-
-const CONN_DETAILS_ENDPOINT = '/api/connection-details';
-
-export function RoomProvider({ children }: { children: React.ReactNode }) {
-  const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
-  const [currentRoomName, setCurrentRoomName] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<string>('');
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const keyProvider = new ExternalE2EEKeyProvider();
-  const { worker, e2eePassphrase } = useSetupE2EE();
-  const e2eeEnabled = !!(e2eePassphrase && worker);
-
-  // Get user identity from localStorage
-  const getUserIdentity = useCallback(() => {
-    if (typeof window === 'undefined') return 'User1234';
-    
-    let userId = localStorage.getItem('livekit-user-id');
-    if (!userId) {
-      userId = `User${Math.random().toString(36).substr(2, 4)}`;
-      localStorage.setItem('livekit-user-id', userId);
-    }
-    return userId;
-  }, []);
-
-  // Initialize currentUser on mount
-  useEffect(() => {
-    setCurrentUser(getUserIdentity());
-  }, [getUserIdentity]);
-
-  const createRoom = useCallback(() => {
-    const roomOptions: RoomOptions = {
-      publishDefaults: {
-        videoSimulcastLayers: [VideoPresets.h540, VideoPresets.h216],
-        red: !e2eeEnabled,
-        videoCodec: 'vp9' as VideoCodec,
-      },
-      adaptiveStream: { pixelDensity: 'screen' },
-      dynacast: true,
-      e2ee: e2eeEnabled ? { keyProvider, worker } : undefined,
-    };
-    return new Room(roomOptions);
-  }, [e2eeEnabled, keyProvider, worker]);
-
-  const joinRoom = useCallback(async (roomName: string) => {
-    try {
-      setError(null);
-      setIsConnecting(true);
-
-      // Leave current room if connected
-      if (currentRoom) {
-        currentRoom.disconnect();
-        setCurrentRoom(null);
-        setCurrentRoomName(null);
-        setIsConnected(false);
-      }
-
-      // Get connection details
-      const userIdentity = getUserIdentity();
-      const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
-      url.searchParams.append('roomName', roomName);
-      url.searchParams.append('participantName', userIdentity);
-
-      const response = await fetch(url.toString());
-      if (!response.ok) {
-        throw new Error('Failed to get connection details');
-      }
-      
-      const connectionDetails: ConnectionDetails = await response.json();
-
-      // Create and connect to new room
-      const room = createRoom();
-      
-      // Set up event listeners
-      room.on(RoomEvent.Connected, () => {
-        setIsConnected(true);
-        setIsConnecting(false);
-      });
-
-      room.on(RoomEvent.Disconnected, () => {
-        setIsConnected(false);
-        setCurrentRoom(null);
-        setCurrentRoomName(null);
-      });
-
-      room.on(RoomEvent.ParticipantDisconnected, (participant) => {
-        // Handle when other participants disconnect
-        console.log('Participant disconnected:', participant.identity);
-      });
-
-      room.on(RoomEvent.EncryptionError, (error) => {
-        console.error('Encryption error:', error);
-        setError(`Encryption error: ${error.message}`);
-      });
-
-      room.on(RoomEvent.MediaDevicesError, (error) => {
-        console.error('Media devices error:', error);
-        setError(`Media error: ${error.message}`);
-      });
-
-      // Handle E2EE setup
-      if (e2eeEnabled) {
-        await keyProvider.setKey(e2eePassphrase);
-        await room.setE2EEEnabled(true);
-      }
-
-      // Connect to room
-      const connectOptions: RoomConnectOptions = {
-        autoSubscribe: true,
-      };
-
-      await room.connect(connectionDetails.serverUrl, connectionDetails.participantToken, connectOptions);
-
-      // Enable microphone only (camera disabled by default)
-      try {
-        await room.localParticipant.setMicrophoneEnabled(true);
-        // Camera remains disabled by default
-      } catch (mediaError) {
-        console.warn('Failed to enable microphone:', mediaError);
-      }
-
-      setCurrentRoom(room);
-      setCurrentRoomName(roomName);
-
-    } catch (err) {
-      console.error('Failed to join room:', err);
-      setError(err instanceof Error ? err.message : 'Failed to join room');
-      setIsConnecting(false);
-    }
-  }, [currentRoom, getUserIdentity, createRoom, e2eeEnabled, keyProvider, e2eePassphrase, worker]);
-
-  const leaveRoom = useCallback(() => {
-    if (currentRoom) {
-      currentRoom.disconnect();
-      setCurrentRoom(null);
-      setCurrentRoomName(null);
-      setIsConnected(false);
-    }
-  }, [currentRoom]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (currentRoom) {
-        currentRoom.disconnect();
-      }
-    };
-  }, [currentRoom]);
-
-  // Use performance optimizer if room exists
-  useLowCPUOptimizer(currentRoom);
-
-  const value: RoomContextType = {
-    currentRoom,
-    currentRoomName,
-    currentUser,
-    isConnecting,
-    isConnected,
-    joinRoom,
-    leaveRoom,
-    error,
-  };
-
-  return (
-    <RoomContext.Provider value={value}>
-      {children}
-    </RoomContext.Provider>
-  );
-}
-</file>
-
-<file path="lib/SettingsMenu.tsx">
+<file path="lib/livekit/SettingsMenu.tsx">
 'use client';
 import * as React from 'react';
 import { Track } from 'livekit-client';
@@ -2049,7 +1041,7 @@ import {
   useRoomContext,
   useIsRecording,
 } from '@livekit/components-react';
-import styles from '../styles/SettingsMenu.module.css';
+import styles from '../../styles/SettingsMenu.module.css';
 import { CameraSettings } from './CameraSettings';
 import { MicrophoneSettings } from './MicrophoneSettings';
 /**
@@ -2195,37 +1187,42 @@ export function SettingsMenu(props: SettingsMenuProps) {
 }
 </file>
 
-<file path="lib/supabase.ts">
-import { createClient } from '@supabase/supabase-js';
+<file path="lib/livekit/supabase.ts">
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let _supabase: SupabaseClient | null = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+function getSupabase(): SupabaseClient {
+  if (_supabase) return _supabase;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) {
+    throw new Error('Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY)');
+  }
+  _supabase = createClient(url, anon, {
+    realtime: { params: { eventsPerSecond: 10 } },
+  });
+  return _supabase;
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
-    },
-  },
-});
-
-// Presence channel for voice rooms
-export const getVoiceRoomPresence = (roomId: string) => {
+/**
+ * Presence channel for voice rooms.
+ * @param roomId e.g. 'general-voice'
+ * @param userKey the *user identity* (must be unique per user)
+ */
+export function getVoiceRoomPresence(roomId: string, userKey: string) {
+  const supabase = getSupabase();
   return supabase.channel(`voice-room-${roomId}`, {
     config: {
       presence: {
-        key: roomId,
+        key: userKey, // IMPORTANT: presence key must be a user identity, not the room id
       },
     },
   });
-};
+}
 </file>
 
-<file path="lib/types.ts">
+<file path="lib/livekit/types.ts">
 import { LocalAudioTrack, LocalVideoTrack, videoCodecs } from 'livekit-client';
 import { VideoCodec } from 'livekit-client';
 
@@ -2256,10 +1253,10 @@ export type ConnectionDetails = {
 };
 </file>
 
-<file path="lib/useGlobalVoicePresence.ts">
+<file path="lib/livekit/useGlobalVoicePresence.ts">
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getVoiceRoomPresence } from './supabase';
 import { useRoomContext } from './RoomContext';
 
@@ -2273,50 +1270,54 @@ interface VoiceRoomPresence {
   [roomId: string]: VoiceRoomUser[];
 }
 
-const roomIds = ['general-voice', 'gaming-lounge', 'study-hall', 'music-jam', 'dev-talk'];
-
-export function useGlobalVoicePresence() {
-  const { currentRoomName, currentUser, isConnected } = useRoomContext();
+/**
+ * Subscribe (read-only) to presence for a set of roomIds.
+ * We DO NOT track the local user here; that is done by useVoiceRoomPresence().
+ */
+export function useGlobalVoicePresence(roomIds: string[]) {
+  const { currentUser } = useRoomContext();
   const [presence, setPresence] = useState<VoiceRoomPresence>({});
-  const channelsRef = useRef<{[roomId: string]: any}>({});
-  const currentUserRoomRef = useRef<string | null>(null);
+  const channelsRef = useRef<{ [roomId: string]: ReturnType<typeof getVoiceRoomPresence> }>(
+    {},
+  );
 
-  // Initialize all room channels
   useEffect(() => {
-    roomIds.forEach(roomId => {
+    const userKey = currentUser || 'anon';
+    // subscribe to each room's presence channel
+    roomIds.forEach((roomId) => {
       if (!channelsRef.current[roomId]) {
-        const channel = getVoiceRoomPresence(roomId);
+        const channel = getVoiceRoomPresence(roomId, userKey);
         channelsRef.current[roomId] = channel;
 
-        channel.subscribe(async (status) => {
+        channel.subscribe((status: string) => {
           if (status === 'SUBSCRIBED') {
-            console.log(`Subscribed to presence channel: ${roomId}`);
+            // no-op
           }
         });
 
         channel.on('presence', { event: 'sync' }, () => {
-          const state = channel.presenceState();
-          const users = Object.values(state).map(user => user[0] as unknown as VoiceRoomUser);
-          setPresence(prev => ({
-            ...prev,
-            [roomId]: users,
-          }));
+          const state = channelsRef.current[roomId]?.presenceState() ?? {};
+          const users = Object.values(state).flat().map((u) => u as unknown as VoiceRoomUser);
+          setPresence((prev) => ({ ...prev, [roomId]: users }));
         });
 
         channel.on('presence', { event: 'join' }, ({ newPresences }) => {
           const newUsers = newPresences as unknown as VoiceRoomUser[];
-          setPresence(prev => ({
+          setPresence((prev) => ({
             ...prev,
-            [roomId]: [...(prev[roomId] || []).filter(u => !newUsers.some(nu => nu.id === u.id)), ...newUsers],
+            [roomId]: [
+              ...(prev[roomId] || []).filter((u) => !newUsers.some((nu) => nu.id === u.id)),
+              ...newUsers,
+            ],
           }));
         });
 
         channel.on('presence', { event: 'leave' }, ({ leftPresences }) => {
           const leftUsers = leftPresences as unknown as VoiceRoomUser[];
-          setPresence(prev => ({
+          setPresence((prev) => ({
             ...prev,
             [roomId]: (prev[roomId] || []).filter(
-              user => !leftUsers.some(leftUser => leftUser.id === user.id)
+              (u) => !leftUsers.some((lu) => lu.id === u.id),
             ),
           }));
         });
@@ -2324,57 +1325,16 @@ export function useGlobalVoicePresence() {
     });
 
     return () => {
-      Object.values(channelsRef.current).forEach(channel => {
-        channel?.unsubscribe();
-      });
+      Object.values(channelsRef.current).forEach((ch) => ch?.unsubscribe());
       channelsRef.current = {};
     };
-  }, []);
+  }, [roomIds, currentUser]);
 
-  // Track user presence in current room
-  useEffect(() => {
-    const trackUserPresence = async () => {
-      // Remove user from previous room
-      if (currentUserRoomRef.current && channelsRef.current[currentUserRoomRef.current]) {
-        console.log(`Removing user from: ${currentUserRoomRef.current}`);
-        await channelsRef.current[currentUserRoomRef.current].untrack();
-      }
-
-      // Add user to current room
-      if (currentRoomName && currentUser && isConnected && channelsRef.current[currentRoomName]) {
-        console.log(`Adding user to: ${currentRoomName}`);
-        await channelsRef.current[currentRoomName].track({
-          id: currentUser,
-          name: currentUser,
-          joinedAt: new Date().toISOString(),
-        });
-        currentUserRoomRef.current = currentRoomName;
-      } else if (!isConnected && currentUserRoomRef.current) {
-        // User disconnected, remove from all rooms
-        console.log('User disconnected, removing from all rooms');
-        currentUserRoomRef.current = null;
-      }
-    };
-
-    trackUserPresence();
-  }, [currentRoomName, currentUser, isConnected]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (currentUserRoomRef.current && channelsRef.current[currentUserRoomRef.current]) {
-        channelsRef.current[currentUserRoomRef.current].untrack();
-      }
-    };
-  }, []);
-
-  return {
-    presence,
-  };
+  return { presence };
 }
 </file>
 
-<file path="lib/usePerfomanceOptimiser.ts">
+<file path="lib/livekit/usePerfomanceOptimiser.ts">
 import {
   Room,
   ParticipantEvent,
@@ -2456,142 +1416,68 @@ export function useLowCPUOptimizer(room: Room | null, options: Partial<LowCPUOpt
 }
 </file>
 
-<file path="lib/useSetupE2EE.ts">
-import React from 'react';
-import { ExternalE2EEKeyProvider } from 'livekit-client';
-import { decodePassphrase } from './client-utils';
-
-export function useSetupE2EE() {
-  const e2eePassphrase =
-    typeof window !== 'undefined' ? decodePassphrase(location.hash.substring(1)) : undefined;
-
-  const worker: Worker | undefined =
-    typeof window !== 'undefined' && e2eePassphrase
-      ? new Worker(new URL('livekit-client/e2ee-worker', import.meta.url))
-      : undefined;
-
-  return { worker, e2eePassphrase };
-}
-</file>
-
-<file path="lib/useVoiceRoomPresence.ts">
+<file path="lib/livekit/useVoiceRoomPresence.ts">
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { getVoiceRoomPresence } from './supabase';
 import { useRoomContext } from './RoomContext';
 
-interface VoiceRoomUser {
-  id: string;
-  name: string;
-  joinedAt: string;
-}
-
-interface VoiceRoomPresence {
-  [roomId: string]: VoiceRoomUser[];
-}
-
 export function useVoiceRoomPresence() {
-  const { currentRoomName, currentUser, isConnected } = useRoomContext();
-  const [presence, setPresence] = useState<VoiceRoomPresence>({});
-  const [isPresenceConnected, setIsPresenceConnected] = useState(false);
+  const { currentRoomName, currentRoom, currentUser, isConnected } = useRoomContext();
   const currentChannelRef = useRef<any>(null);
   const currentRoomRef = useRef<string | null>(null);
 
-  const leaveCurrentRoom = useCallback(async () => {
+  const leaveCurrentRoom = async () => {
     if (currentChannelRef.current) {
-      console.log('Leaving presence channel:', currentRoomRef.current);
       await currentChannelRef.current.untrack();
       await currentChannelRef.current.unsubscribe();
       currentChannelRef.current = null;
       currentRoomRef.current = null;
-      setIsPresenceConnected(false);
     }
-  }, []);
+  };
 
-  const joinVoiceRoom = useCallback(async (roomId: string, userName: string) => {
+  const joinVoiceRoom = async (roomId: string, userKey: string) => {
     // Always leave current room first
     await leaveCurrentRoom();
 
-    console.log('Joining presence channel:', roomId);
-    const channel = getVoiceRoomPresence(roomId);
+    const channel = getVoiceRoomPresence(roomId, userKey);
     currentChannelRef.current = channel;
     currentRoomRef.current = roomId;
     
-    await channel.subscribe(async (status) => {
+    await channel.subscribe(async (status: string) => {
       if (status === 'SUBSCRIBED') {
-        console.log('Subscribed to channel, tracking presence for:', userName);
         await channel.track({
-          id: userName,
-          name: userName,
+          id: userKey,
+          name: userKey,
           joinedAt: new Date().toISOString(),
         });
-        setIsPresenceConnected(true);
       }
     });
-
-    // Listen for all presence events for all rooms
-    channel.on('presence', { event: 'sync' }, () => {
-      console.log('Presence sync for room:', roomId);
-      const state = channel.presenceState();
-      const users = Object.values(state).map(user => user[0] as unknown as VoiceRoomUser);
-      setPresence(prev => ({
-        ...prev,
-        [roomId]: users,
-      }));
-    });
-
-    channel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
-      console.log('User joined room:', roomId, newPresences);
-      const newUsers = newPresences as unknown as VoiceRoomUser[];
-      setPresence(prev => ({
-        ...prev,
-        [roomId]: [...(prev[roomId] || []).filter(u => !newUsers.some(nu => nu.id === u.id)), ...newUsers],
-      }));
-    });
-
-    channel.on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-      console.log('User left room:', roomId, leftPresences);
-      const leftUsers = leftPresences as unknown as VoiceRoomUser[];
-      setPresence(prev => ({
-        ...prev,
-        [roomId]: (prev[roomId] || []).filter(
-          user => !leftUsers.some(leftUser => leftUser.id === user.id)
-        ),
-      }));
-    });
-
-    return channel;
-  }, [leaveCurrentRoom]);
+  };
 
   // Handle room changes and disconnections
   useEffect(() => {
-    if (currentRoomName && currentUser && isConnected) {
+    if (currentRoomName && isConnected) {
       // Only join if we're not already in this room
       if (currentRoomRef.current !== currentRoomName) {
-        console.log('Room changed from', currentRoomRef.current, 'to', currentRoomName);
-        joinVoiceRoom(currentRoomName, currentUser);
+        const identity =
+          currentRoom?.localParticipant?.identity || currentUser || 'anon';
+        joinVoiceRoom(currentRoomName, identity);
       }
     } else if (!isConnected) {
-      // Leave room when disconnected
-      console.log('Disconnected from LiveKit, leaving presence');
       leaveCurrentRoom();
     }
-  }, [currentRoomName, currentUser, isConnected, joinVoiceRoom, leaveCurrentRoom]);
+  }, [currentRoomName, isConnected, currentRoom]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       leaveCurrentRoom();
     };
-  }, [leaveCurrentRoom]);
+  }, []);
 
-  return {
-    presence,
-    isConnected: isPresenceConnected,
-    joinVoiceRoom,
-    leaveVoiceRoom: leaveCurrentRoom,
-  };
+  return null;
 }
 </file>
 
@@ -3418,6 +2304,9 @@ LIVEKIT_API_SECRET=
 LIVEKIT_URL=
 
 
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
 # OPTIONAL SETTINGS
 # ################# 
 # Recording
@@ -3934,16 +2823,1035 @@ npm run lint
 }
 </file>
 
+<file path="app/api/connection-details/route.ts">
+import { randomString } from '@/lib/livekit/client-utils';
+import { getLiveKitURL } from '@/lib/livekit/getLiveKitURL';
+import { ConnectionDetails } from '@/lib/livekit/types';
+import { AccessToken, AccessTokenOptions, VideoGrant } from 'livekit-server-sdk';
+import { NextRequest, NextResponse } from 'next/server';
+
+const API_KEY = process.env.LIVEKIT_API_KEY;
+const API_SECRET = process.env.LIVEKIT_API_SECRET;
+const LIVEKIT_URL = process.env.LIVEKIT_URL;
+
+const COOKIE_KEY = 'random-participant-postfix';
+
+export async function GET(request: NextRequest) {
+  try {
+    // Parse query parameters
+    const roomName = request.nextUrl.searchParams.get('roomName');
+    const participantName = request.nextUrl.searchParams.get('participantName');
+    const metadata = request.nextUrl.searchParams.get('metadata') ?? '';
+    const region = request.nextUrl.searchParams.get('region');
+    if (!LIVEKIT_URL) {
+      throw new Error('LIVEKIT_URL is not defined');
+    }
+    const livekitServerUrl = region ? getLiveKitURL(LIVEKIT_URL, region) : LIVEKIT_URL;
+    let randomParticipantPostfix = request.cookies.get(COOKIE_KEY)?.value;
+    if (livekitServerUrl === undefined) {
+      throw new Error('Invalid region');
+    }
+
+    if (typeof roomName !== 'string') {
+      return new NextResponse('Missing required query parameter: roomName', { status: 400 });
+    }
+    if (participantName === null) {
+      return new NextResponse('Missing required query parameter: participantName', { status: 400 });
+    }
+
+    // Generate participant token
+    if (!randomParticipantPostfix) {
+      randomParticipantPostfix = randomString(4);
+    }
+    const participantToken = await createParticipantToken(
+      {
+        identity: `${participantName}__${randomParticipantPostfix}`,
+        name: participantName,
+        metadata,
+      },
+      roomName,
+    );
+
+    // Return connection details
+    const data: ConnectionDetails = {
+      serverUrl: livekitServerUrl,
+      roomName: roomName,
+      participantToken: participantToken,
+      participantName: participantName,
+    };
+    return new NextResponse(JSON.stringify(data), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': `${COOKIE_KEY}=${randomParticipantPostfix}; Path=/; HttpOnly; SameSite=Strict; Secure; Expires=${getCookieExpirationTime()}`,
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return new NextResponse(error.message, { status: 500 });
+    }
+  }
+}
+
+function createParticipantToken(userInfo: AccessTokenOptions, roomName: string) {
+  const at = new AccessToken(API_KEY, API_SECRET, userInfo);
+  at.ttl = '5m';
+  const grant: VideoGrant = {
+    room: roomName,
+    roomJoin: true,
+    canPublish: true,
+    canPublishData: true,
+    canSubscribe: true,
+  };
+  at.addGrant(grant);
+  return at.toJwt();
+}
+
+function getCookieExpirationTime(): string {
+  var now = new Date();
+  var time = now.getTime();
+  var expireTime = time + 60 * 120 * 1000;
+  now.setTime(expireTime);
+  return now.toUTCString();
+}
+</file>
+
+<file path="app/components/VoiceStatusBar.tsx">
+'use client';
+
+import React from 'react';
+import { useRoomContext } from '@/lib/livekit/RoomContext';
+import { Track } from 'livekit-client';
+import { useTrackToggle, useLocalParticipant } from '@livekit/components-react';
+import styles from '../../styles/VoiceStatusBar.module.css';
+
+function VoiceConnectedIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+    </svg>
+  );
+}
+
+function MicIcon({ muted }: { muted: boolean }) {
+  if (muted) {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.24-5.3-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c.57-.08 1.12-.23 1.64-.46l2.92 2.92L19 20.46 4.27 3z"/>
+      </svg>
+    );
+  }
+  
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+    </svg>
+  );
+}
+
+function CameraIcon({ disabled }: { disabled: boolean }) {
+  if (disabled) {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2zM5 16V8h1.73l8 8H5z"/>
+      </svg>
+    );
+  }
+  
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+    </svg>
+  );
+}
+
+function ScreenShareIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+    </svg>
+  );
+}
+
+
+function VoiceStatusBarInner() {
+  const { currentRoomName, leaveRoom } = useRoomContext();
+  
+  const { localParticipant } = useLocalParticipant();
+  
+  const { toggle: toggleMic, enabled: micEnabled } = useTrackToggle({ 
+    source: Track.Source.Microphone 
+  });
+  const { toggle: toggleCamera, enabled: cameraEnabled } = useTrackToggle({ 
+    source: Track.Source.Camera 
+  });
+  const { toggle: toggleScreenShare, enabled: screenShareEnabled } = useTrackToggle({ 
+    source: Track.Source.ScreenShare 
+  });
+
+  return (
+    <div className={styles.voiceStatusBar}>
+      <div className={styles.connectionInfo}>
+        <VoiceConnectedIcon />
+        <div className={styles.connectionText}>
+          <span className={styles.status}>Connected</span>
+          <span className={styles.roomName}>{currentRoomName}</span>
+        </div>
+      </div>
+
+      <div className={styles.controls}>
+        <button 
+          className={`${styles.controlButton} ${styles.smallButton} ${!micEnabled ? styles.muted : ''}`}
+          onClick={() => toggleMic()}
+          title={micEnabled ? 'Mute' : 'Unmute'}
+          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
+        >
+          <MicIcon muted={!micEnabled} />
+        </button>
+
+        <button 
+          className={`${styles.controlButton} ${styles.smallButton} ${!cameraEnabled ? styles.disabled : ''}`}
+          onClick={() => toggleCamera()}
+          title={cameraEnabled ? 'Turn off camera' : 'Turn on camera'}
+          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
+        >
+          <CameraIcon disabled={!cameraEnabled} />
+        </button>
+
+        <button 
+          className={`${styles.controlButton} ${styles.smallButton} ${screenShareEnabled ? styles.active : ''}`}
+          onClick={() => toggleScreenShare()}
+          title={screenShareEnabled ? 'Stop sharing' : 'Share screen'}
+          style={{ width: 28, height: 28, minWidth: 0, minHeight: 0, padding: 2 }}
+        >
+          <ScreenShareIcon />
+        </button>
+
+      </div>
+
+      <div className={styles.actions}>
+        <button 
+          className={styles.leaveButton}
+          onClick={leaveRoom}
+          title="Leave voice channel"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function VoiceStatusBar() {
+  const { currentRoomName, isConnected, leaveRoom } = useRoomContext();
+  
+  // Only render when connected to a room
+  if (!currentRoomName || !isConnected) {
+    return null;
+  }
+
+  return <VoiceStatusBarInner />;
+}
+</file>
+
+<file path="app/custom/page.tsx">
+import { videoCodecs } from 'livekit-client';
+import { VideoConferenceClientImpl } from './VideoConferenceClientImpl';
+import { isVideoCodec } from '@/lib/livekit/types';
+
+interface PageProps {
+  searchParams: Promise<{
+    liveKitUrl?: string;
+    token?: string;
+    codec?: string;
+  }>;
+}
+
+export default async function CustomRoomConnection({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const { liveKitUrl, token, codec } = resolvedSearchParams;
+  
+  if (typeof liveKitUrl !== 'string') {
+    return <h2>Missing LiveKit URL</h2>;
+  }
+  if (typeof token !== 'string') {
+    return <h2>Missing LiveKit token</h2>;
+  }
+  if (codec !== undefined && !isVideoCodec(codec)) {
+    return <h2>Invalid codec, if defined it has to be [{videoCodecs.join(', ')}].</h2>;
+  }
+
+  return (
+    <main data-lk-theme="default" style={{ height: '100%' }}>
+      <VideoConferenceClientImpl liveKitUrl={liveKitUrl} token={token} codec={codec} />
+    </main>
+  );
+}
+</file>
+
+<file path="app/custom/VideoConferenceClientImpl.tsx">
+'use client';
+
+import { formatChatMessageLinks, RoomContext, VideoConference } from '@livekit/components-react';
+import {
+  ExternalE2EEKeyProvider,
+  LogLevel,
+  Room,
+  RoomConnectOptions,
+  RoomOptions,
+  VideoPresets,
+  type VideoCodec,
+} from 'livekit-client';
+import { useEffect, useMemo, useState } from 'react';
+import { DebugMode } from '@/lib/livekit/Debug';
+import { KeyboardShortcuts } from '@/lib/livekit/KeyboardShortcuts';
+import { SettingsMenu } from '@/lib/livekit/SettingsMenu';
+import { useSetupE2EE } from '@/lib/livekit/useSetupE2EE';
+import { useLowCPUOptimizer } from '@/lib/livekit/usePerfomanceOptimiser';
+
+export function VideoConferenceClientImpl(props: {
+  liveKitUrl: string;
+  token: string;
+  codec: VideoCodec | undefined;
+}) {
+  const keyProvider = new ExternalE2EEKeyProvider();
+  const { worker, e2eePassphrase } = useSetupE2EE();
+  const e2eeEnabled = !!(e2eePassphrase && worker);
+
+  const [e2eeSetupComplete, setE2eeSetupComplete] = useState(false);
+
+  const roomOptions = useMemo((): RoomOptions => {
+    return {
+      publishDefaults: {
+        videoSimulcastLayers: [VideoPresets.h540, VideoPresets.h216],
+        red: !e2eeEnabled,
+        videoCodec: props.codec,
+      },
+      adaptiveStream: { pixelDensity: 'screen' },
+      dynacast: true,
+      e2ee: e2eeEnabled
+        ? {
+            keyProvider,
+            worker,
+          }
+        : undefined,
+    };
+  }, [e2eeEnabled, props.codec, keyProvider, worker]);
+
+  const room = useMemo(() => new Room(roomOptions), [roomOptions]);
+
+  const connectOptions = useMemo((): RoomConnectOptions => {
+    return {
+      autoSubscribe: true,
+    };
+  }, []);
+
+  useEffect(() => {
+    if (e2eeEnabled) {
+      keyProvider.setKey(e2eePassphrase).then(() => {
+        room.setE2EEEnabled(true).then(() => {
+          setE2eeSetupComplete(true);
+        });
+      });
+    } else {
+      setE2eeSetupComplete(true);
+    }
+  }, [e2eeEnabled, e2eePassphrase, keyProvider, room, setE2eeSetupComplete]);
+
+  useEffect(() => {
+    if (e2eeSetupComplete) {
+      room.connect(props.liveKitUrl, props.token, connectOptions).catch((error) => {
+        console.error(error);
+      });
+      room.localParticipant.enableCameraAndMicrophone().catch((error) => {
+        console.error(error);
+      });
+    }
+  }, [room, props.liveKitUrl, props.token, connectOptions, e2eeSetupComplete]);
+
+  useLowCPUOptimizer(room);
+
+  return (
+    <div className="lk-room-container">
+      <RoomContext.Provider value={room}>
+        <KeyboardShortcuts />
+        <VideoConference
+          chatMessageFormatter={formatChatMessageLinks}
+          SettingsComponent={
+            process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU === 'true' ? SettingsMenu : undefined
+          }
+        />
+        <DebugMode logLevel={LogLevel.debug} />
+      </RoomContext.Provider>
+    </div>
+  );
+}
+</file>
+
+<file path="app/rooms/[roomName]/page.tsx">
+import * as React from 'react';
+import { PageClientImpl } from './PageClientImpl';
+import { isVideoCodec } from '@/lib/livekit/types';
+
+interface PageProps {
+  params: Promise<{ roomName: string }>;
+  searchParams: Promise<{
+    region?: string;
+    hq?: string;
+    codec?: string;
+  }>;
+}
+
+export default async function Page({ params, searchParams }: PageProps) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
+  const codec =
+    typeof resolvedSearchParams.codec === 'string' && isVideoCodec(resolvedSearchParams.codec)
+      ? resolvedSearchParams.codec
+      : 'vp9';
+  const hq = resolvedSearchParams.hq === 'true' ? true : false;
+
+  return (
+    <PageClientImpl
+      roomName={resolvedParams.roomName}
+      region={resolvedSearchParams.region}
+      hq={hq}
+      codec={codec}
+    />
+  );
+}
+</file>
+
+<file path="app/layout.tsx">
+import '../styles/globals.css';
+import '@livekit/components-styles';
+import '@livekit/components-styles/prefabs';
+import type { Metadata, Viewport } from 'next';
+import { Toaster } from 'react-hot-toast';
+import { DiscordLayout } from './components/DiscordLayout';
+import { RoomProvider } from '@/lib/livekit/RoomContext';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'LiveKit Meet | Conference app build with LiveKit open source',
+    template: '%s',
+  },
+  description:
+    'LiveKit is an open source WebRTC project that gives you everything needed to build scalable and real-time audio and/or video experiences in your applications.',
+  twitter: {
+    creator: '@livekitted',
+    site: '@livekitted',
+    card: 'summary_large_image',
+  },
+  openGraph: {
+    url: 'https://meet.livekit.io',
+    images: [
+      {
+        url: 'https://meet.livekit.io/images/livekit-meet-open-graph.png',
+        width: 2000,
+        height: 1000,
+        type: 'image/png',
+      },
+    ],
+    siteName: 'LiveKit Meet',
+  },
+  icons: {
+    icon: {
+      rel: 'icon',
+      url: '/favicon.ico',
+    },
+    apple: [
+      {
+        rel: 'apple-touch-icon',
+        url: '/images/livekit-apple-touch.png',
+        sizes: '180x180',
+      },
+      { rel: 'mask-icon', url: '/images/livekit-safari-pinned-tab.svg', color: '#070707' },
+    ],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#070707',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body data-lk-theme="default">
+        <Toaster />
+        <RoomProvider>
+          <DiscordLayout>
+            {children}
+          </DiscordLayout>
+        </RoomProvider>
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="lib/livekit/RoomContext.tsx">
+'use client';
+
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { Room, RoomOptions, RoomConnectOptions, VideoPresets, VideoCodec, ExternalE2EEKeyProvider, RoomEvent } from 'livekit-client';
+import { ConnectionDetails } from './types';
+import { useSetupE2EE } from './useSetupE2EE';
+import { useLowCPUOptimizer } from './usePerfomanceOptimiser';
+
+interface RoomContextType {
+  currentRoom: Room | null;
+  currentRoomName: string | null;
+  currentUser: string;
+  isConnecting: boolean;
+  isConnected: boolean;
+  joinRoom: (roomName: string) => Promise<void>;
+  leaveRoom: () => void;
+  error: string | null;
+}
+
+const RoomContext = createContext<RoomContextType | null>(null);
+
+export function useRoomContext() {
+  const context = useContext(RoomContext);
+  if (!context) {
+    throw new Error('useRoomContext must be used within RoomProvider');
+  }
+  return context;
+}
+
+const CONN_DETAILS_ENDPOINT = '/api/connection-details';
+
+export function RoomProvider({ children }: { children: React.ReactNode }) {
+  const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
+  const [currentRoomName, setCurrentRoomName] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<string>('');
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [joinSeq, setJoinSeq] = useState(0);
+
+  const keyProvider = new ExternalE2EEKeyProvider();
+  const { worker, e2eePassphrase } = useSetupE2EE();
+  const e2eeEnabled = !!(e2eePassphrase && worker);
+
+  // Get user identity from localStorage
+  const getUserIdentity = useCallback(() => {
+    if (typeof window === 'undefined') return 'User1234';
+    
+    let userId = localStorage.getItem('livekit-user-id');
+    if (!userId) {
+      userId = `User${Math.random().toString(36).substr(2, 4)}`;
+      localStorage.setItem('livekit-user-id', userId);
+    }
+    return userId;
+  }, []);
+
+  // Initialize currentUser on mount
+  useEffect(() => {
+    setCurrentUser(getUserIdentity());
+  }, [getUserIdentity]);
+
+  const createRoom = useCallback(() => {
+    const roomOptions: RoomOptions = {
+      publishDefaults: {
+        videoSimulcastLayers: [VideoPresets.h540, VideoPresets.h216],
+        red: !e2eeEnabled,
+        videoCodec: 'vp9' as VideoCodec,
+      },
+      adaptiveStream: { pixelDensity: 'screen' },
+      dynacast: true,
+      e2ee: e2eeEnabled ? { keyProvider, worker } : undefined,
+    };
+    return new Room(roomOptions);
+  }, [e2eeEnabled, keyProvider, worker]);
+
+  const joinRoom = useCallback(async (roomName: string) => {
+    try {
+      setError(null);
+      setIsConnecting(true);
+      const mySeq = joinSeq + 1;
+      setJoinSeq(mySeq);
+
+      // Leave current room if connected
+      if (currentRoom) {
+        currentRoom.disconnect();
+        setCurrentRoom(null);
+        setCurrentRoomName(null);
+        setIsConnected(false);
+      }
+
+      // Get connection details
+      const userIdentity = getUserIdentity();
+      const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
+      url.searchParams.append('roomName', roomName);
+      url.searchParams.append('participantName', userIdentity);
+
+      const response = await fetch(url.toString());
+      if (!response.ok) {
+        throw new Error('Failed to get connection details');
+      }
+      
+      const connectionDetails: ConnectionDetails = await response.json();
+
+      // Create and connect to new room
+      const room = createRoom();
+      
+      // Set up event listeners
+      room.on(RoomEvent.Connected, () => {
+        // Abandon if a newer join started
+        if (mySeq !== joinSeq) {
+          room.disconnect();
+          return;
+        }
+        setCurrentUser(room.localParticipant.identity);
+        setIsConnected(true);
+        setIsConnecting(false);
+      });
+
+      room.on(RoomEvent.Disconnected, () => {
+        setIsConnected(false);
+        setCurrentRoom(null);
+        setCurrentRoomName(null);
+      });
+
+      room.on(RoomEvent.ParticipantDisconnected, (participant) => {
+        // Handle when other participants disconnect
+        console.log('Participant disconnected:', participant.identity);
+        console.log('Total participants now:', room.remoteParticipants.size + 1);
+      });
+
+      room.on(RoomEvent.ParticipantConnected, (participant) => {
+        // Handle when other participants connect
+        console.log('Participant connected:', participant.identity);
+        console.log('Total participants now:', room.remoteParticipants.size + 1);
+      });
+
+      room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+        // Handle when tracks are subscribed
+        console.log('Track subscribed:', track.kind, 'from', participant.identity);
+      });
+
+      room.on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+        // Handle when tracks are unsubscribed
+        console.log('Track unsubscribed:', track.kind, 'from', participant.identity);
+      });
+
+      room.on(RoomEvent.EncryptionError, (error) => {
+        console.error('Encryption error:', error);
+        setError(`Encryption error: ${error.message}`);
+      });
+
+      room.on(RoomEvent.MediaDevicesError, (error) => {
+        console.error('Media devices error:', error);
+        setError(`Media error: ${error.message}`);
+      });
+
+      // Handle E2EE setup
+      if (e2eeEnabled) {
+        await keyProvider.setKey(e2eePassphrase);
+        await room.setE2EEEnabled(true);
+      }
+
+      // Connect to room
+      const connectOptions: RoomConnectOptions = {
+        autoSubscribe: true,
+      };
+
+      await room.connect(
+        connectionDetails.serverUrl,
+        connectionDetails.participantToken,
+        connectOptions,
+      );
+      // Persist AV prefs across rooms (mic on by default, cam off by default)
+      const micPref = localStorage.getItem('lk-mic-enabled');
+      const camPref = localStorage.getItem('lk-camera-enabled');
+      try {
+        await room.localParticipant.setMicrophoneEnabled(micPref !== 'false');
+        await room.localParticipant.setCameraEnabled(camPref === 'true');
+      } catch (mediaError) {
+        console.warn('Failed to enable microphone/camera:', mediaError);
+      }
+
+      setCurrentRoom(room);
+      setCurrentRoomName(roomName);
+
+    } catch (err) {
+      console.error('Failed to join room:', err);
+      setError(err instanceof Error ? err.message : 'Failed to join room');
+      setIsConnecting(false);
+    }
+  }, [currentRoom, getUserIdentity, createRoom, e2eeEnabled, keyProvider, e2eePassphrase, worker, joinSeq]);
+
+  const leaveRoom = useCallback(() => {
+    if (currentRoom) {
+      currentRoom.disconnect();
+      setCurrentRoom(null);
+      setCurrentRoomName(null);
+      setIsConnected(false);
+    }
+  }, [currentRoom]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (currentRoom) {
+        currentRoom.disconnect();
+      }
+    };
+  }, [currentRoom]);
+
+  // Ensure we disconnect cleanly if tab closes
+  useEffect(() => {
+    const handler = () => {
+      if (currentRoom) currentRoom.disconnect();
+    };
+    window.addEventListener('pagehide', handler);
+    window.addEventListener('beforeunload', handler);
+    return () => {
+      window.removeEventListener('pagehide', handler);
+      window.removeEventListener('beforeunload', handler);
+    };
+  }, [currentRoom]);
+
+  // Use performance optimizer if room exists
+  useLowCPUOptimizer(currentRoom);
+
+  const value: RoomContextType = {
+    currentRoom,
+    currentRoomName,
+    currentUser,
+    isConnecting,
+    isConnected,
+    joinRoom,
+    leaveRoom,
+    error,
+  };
+
+  return (
+    <RoomContext.Provider value={value}>
+      {children}
+    </RoomContext.Provider>
+  );
+}
+</file>
+
+<file path="lib/livekit/useSetupE2EE.ts">
+export function useSetupE2EE() {
+  // Disable encryption by always returning undefined
+  const e2eePassphrase = undefined;
+
+  const worker: Worker | undefined = undefined;
+
+  return { worker, e2eePassphrase };
+}
+</file>
+
+<file path="app/components/DiscordLayout.tsx">
+'use client';
+
+import { useRouter, usePathname } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { generateRoomId, randomString } from '@/lib/livekit/client-utils';
+import { useRoomContext } from '@/lib/livekit/RoomContext';
+import { VoiceStatusBar } from './VoiceStatusBar';
+import { RoomContext } from '@livekit/components-react';
+import styles from '../../styles/Discord.module.css';
+
+interface Room {
+  id: string;
+  name: string;
+}
+
+// Available rooms - in real app this would come from your backend
+const mockRooms: Room[] = [
+  { id: 'general-voice', name: 'General' },
+  { id: 'gaming-lounge', name: 'Gaming Lounge' },
+  { id: 'study-hall', name: 'Study Hall' },
+  { id: 'music-jam', name: 'Music Jam' },
+  { id: 'dev-talk', name: 'Dev Talk' },
+];
+
+function VoiceChannelIcon({ isActive }: { isActive: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 21H5V3H13V9H19Z"/>
+    </svg>
+  );
+}
+
+function UserAvatar({ name }: { name: string }) {
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+  return (
+    <div className={styles.avatar}>
+      <div className={styles.avatarInner}>
+        {initials}
+      </div>
+      <div className={styles.onlineIndicator} />
+    </div>
+  );
+}
+
+function VoiceChannel({ room, onJoin, isActive, presence }: { 
+  room: Room; 
+  onJoin: (roomId: string) => void; 
+  isActive: boolean;
+  presence: {[roomId: string]: any[]};
+}) {
+  const roomUsers = presence[room.id] || [];
+  
+  return (
+    <div className={styles.voiceChannel}>
+      <div 
+        className={`${styles.channelHeader} ${isActive ? styles.activeChannel : ''}`}
+        onClick={() => onJoin(room.id)}
+      >
+        <div className={styles.channelInfo}>
+          <VoiceChannelIcon isActive={isActive} />
+          <span className={styles.channelName}>{room.name}</span>
+        </div>
+        <button className={styles.joinButton}>
+          Join
+        </button>
+      </div>
+      
+      {/* Show users in the channel */}
+      {roomUsers.length > 0 && (
+        <div className={styles.channelUsers}>
+          {roomUsers.map(user => (
+            <div key={user.id} className={styles.channelUser}>
+              <div className={styles.userAvatar}>
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <span className={styles.userName}>{user.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CreateRoomModal({ isOpen, onClose, onCreateRoom }: {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreateRoom: (name: string) => void;
+}) {
+  const [roomName, setRoomName] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (roomName.trim()) {
+      onCreateRoom(roomName.trim());
+      setRoomName('');
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <h3>Create Voice Channel</h3>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Channel name"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+            className={styles.input}
+            autoFocus
+          />
+          <div className={styles.modalButtons}>
+            <button type="button" onClick={onClose} className={styles.cancelButton}>
+              Cancel
+            </button>
+            <button type="submit" className={styles.createButton}>
+              Create Channel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export function DiscordLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { currentRoomName, joinRoom, isConnecting, currentRoom, isConnected, leaveRoom } = useRoomContext();
+  const [rooms, setRooms] = useState<Room[]>(mockRooms);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string>('');
+  const [presence, setPresence] = useState<{[roomId: string]: any[]}>({});
+  
+  // Track participants in current room
+  useEffect(() => {
+    if (currentRoom && isConnected) {
+      const updatePresence = () => {
+        const participants = Array.from(currentRoom.remoteParticipants.values()).map(p => ({
+          id: p.identity,
+          name: p.identity,
+        }));
+        // Add local participant
+        participants.push({
+          id: currentRoom.localParticipant.identity,
+          name: currentRoom.localParticipant.identity,
+        });
+        setPresence(prev => ({
+          ...prev,
+          [currentRoomName!]: participants,
+        }));
+      };
+
+      // Initial update
+      updatePresence();
+
+      // Listen for participant changes
+      const handleParticipantConnected = () => updatePresence();
+      const handleParticipantDisconnected = () => updatePresence();
+
+      currentRoom.on('participantConnected', handleParticipantConnected);
+      currentRoom.on('participantDisconnected', handleParticipantDisconnected);
+
+      return () => {
+        currentRoom.off('participantConnected', handleParticipantConnected);
+        currentRoom.off('participantDisconnected', handleParticipantDisconnected);
+      };
+    }
+  }, [currentRoom, isConnected, currentRoomName]);
+
+  // Get user identity from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      let userId = localStorage.getItem('livekit-user-id');
+      if (!userId) {
+        userId = `User${Math.random().toString(36).substr(2, 4)}`;
+        localStorage.setItem('livekit-user-id', userId);
+      }
+      setCurrentUser(userId);
+    }
+  }, []);
+
+  const handleJoinRoom = async (roomId: string) => {
+    try {
+      // If already in a room, leave it first
+      if (currentRoomName && currentRoomName !== roomId) {
+        await leaveRoom();
+      }
+      
+      await joinRoom(roomId);
+      // Navigate to home to show the room content
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to join room:', error);
+    }
+  };
+
+  const handleCreateRoom = (name: string) => {
+    const newRoomId = generateRoomId();
+    const newRoom: Room = {
+      id: newRoomId,
+      name,
+    };
+    setRooms(prev => [...prev, newRoom]);
+    handleJoinRoom(newRoomId);
+  };
+
+  return (
+    <div className={styles.discordContainer} data-lk-theme="default">
+      <div className={styles.sidebar}>
+        <div className={styles.serverIcon}>
+          <img src="/images/livekit-meet-home.svg" alt="LiveKit Meet" width="32" height="32" />
+        </div>
+      </div>
+
+      <div className={styles.channelList}>
+        <div className={styles.serverHeader}>
+          <h2>LiveKit Meet</h2>
+        </div>
+
+        <div className={styles.channelCategory}>
+          <div className={styles.categoryHeader}>
+            <span>VOICE CHANNELS</span>
+            <button 
+              className={styles.addChannelButton}
+              onClick={() => setShowCreateModal(true)}
+              title="Create Channel"
+            >
+              +
+            </button>
+          </div>
+
+          <div className={styles.channelsList}>
+            {rooms.map(room => (
+              <VoiceChannel
+                key={room.id}
+                room={room}
+                onJoin={handleJoinRoom}
+                isActive={room.id === currentRoomName}
+                presence={presence}
+              />
+            ))}
+          </div>
+        </div>
+
+        {currentRoom && isConnected ? (
+          <RoomContext.Provider value={currentRoom}>
+            <VoiceStatusBar />
+          </RoomContext.Provider>
+        ) : (
+          <VoiceStatusBar />
+        )}
+
+        <div className={styles.userArea}>
+          <UserAvatar name={currentUser} />
+          <div className={styles.userInfo}>
+            <span className={styles.username}>{currentUser}</span>
+            <span className={styles.userStatus}>Online</span>
+          </div>
+          <div className={styles.userControls}>
+            <button className={styles.controlButton} title="Mute">🎤</button>
+            <button className={styles.controlButton} title="Deafen">🎧</button>
+            <button className={styles.controlButton} title="Settings">⚙️</button>
+          </div>
+        </div>
+        
+     
+      </div>
+
+      <div className={styles.mainContent}>
+        <div className={styles.contentArea}>
+          {children}
+        </div>
+      </div>
+
+      <CreateRoomModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreateRoom={handleCreateRoom}
+      />
+    </div>
+  );
+}
+</file>
+
 <file path="app/rooms/[roomName]/PageClientImpl.tsx">
 'use client';
 
 import React from 'react';
-import { decodePassphrase } from '@/lib/client-utils';
-import { DebugMode } from '@/lib/Debug';
-import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
-import { RecordingIndicator } from '@/lib/RecordingIndicator';
-import { SettingsMenu } from '@/lib/SettingsMenu';
-import { ConnectionDetails } from '@/lib/types';
+import { decodePassphrase } from '@/lib/livekit/client-utils';
+import { DebugMode } from '@/lib/livekit/Debug';
+import { KeyboardShortcuts } from '@/lib/livekit/KeyboardShortcuts';
+import { RecordingIndicator } from '@/lib/livekit/RecordingIndicator';
+import { SettingsMenu } from '@/lib/livekit/SettingsMenu';
+import { ConnectionDetails } from '@/lib/livekit/types';
 import {
   formatChatMessageLinks,
   LocalUserChoices,
@@ -3964,8 +3872,8 @@ import {
   VideoCaptureOptions,
 } from 'livekit-client';
 import { useRouter } from 'next/navigation';
-import { useSetupE2EE } from '@/lib/useSetupE2EE';
-import { useLowCPUOptimizer } from '@/lib/usePerfomanceOptimiser';
+import { useSetupE2EE } from '@/lib/livekit/useSetupE2EE';
+import { useLowCPUOptimizer } from '@/lib/livekit/usePerfomanceOptimiser';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
@@ -4170,6 +4078,101 @@ function VideoConferenceComponent(props: {
         <DebugMode />
         <RecordingIndicator />
       </RoomContext.Provider>
+    </div>
+  );
+}
+</file>
+
+<file path="app/page.tsx">
+'use client';
+
+import { useRoomContext } from '@/lib/livekit/RoomContext';
+import { RoomContext, VideoConference, formatChatMessageLinks } from '@livekit/components-react';
+import { DebugMode } from '@/lib/livekit/Debug';
+import { KeyboardShortcuts } from '@/lib/livekit/KeyboardShortcuts';
+import { RecordingIndicator } from '@/lib/livekit/RecordingIndicator';
+import { SettingsMenu } from '@/lib/livekit/SettingsMenu';
+import styles from '../styles/Discord.module.css';
+
+const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
+
+export default function HomePage() {
+  const { currentRoom, currentRoomName, isConnecting, isConnected } = useRoomContext();
+
+  if (currentRoom && isConnected) {
+    return (
+      <div className="lk-room-container" style={{ height: '100%' }}>
+        <RoomContext.Provider value={currentRoom}>
+          <KeyboardShortcuts />
+          <VideoConference
+            chatMessageFormatter={formatChatMessageLinks}
+            SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
+          />
+          <DebugMode />
+          <RecordingIndicator />
+          
+          {/* Debug participant info */}
+          <div style={{ 
+            position: 'absolute', 
+            top: '10px', 
+            right: '10px', 
+            background: 'rgba(0,0,0,0.8)', 
+            color: 'white', 
+            padding: '10px', 
+            borderRadius: '5px',
+            fontSize: '12px',
+            zIndex: 1000
+          }}>
+            <div>Local: {currentRoom.localParticipant.identity}</div>
+            <div>Remote: {Array.from(currentRoom.remoteParticipants.values()).map(p => p.identity).join(', ')}</div>
+            <div>Total: {currentRoom.remoteParticipants.size + 1}</div>
+          </div>
+        </RoomContext.Provider>
+      </div>
+    );
+  }
+
+  if (isConnecting) {
+    return (
+      <div className={styles.welcomeArea}>
+        <div className={styles.welcomeContent}>
+          <h1>Connecting to {currentRoomName}...</h1>
+          <p>Please wait while we connect you to the voice channel.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.welcomeArea}>
+      <div className={styles.welcomeContent}>
+        <h1>Welcome to LiveKit Meet</h1>
+        <p>Select a voice channel from the sidebar to join a conversation!</p>
+        
+        <div className={styles.features}>
+          <div className={styles.feature}>
+            <span className={styles.featureIcon}>🎥</span>
+            <div>
+              <h3>HD Video Calls</h3>
+              <p>Crystal clear video with adaptive streaming</p>
+            </div>
+          </div>
+          <div className={styles.feature}>
+            <span className={styles.featureIcon}>🔒</span>
+            <div>
+              <h3>End-to-End Encryption</h3>
+              <p>Your conversations stay private and secure</p>
+            </div>
+          </div>
+          <div className={styles.feature}>
+            <span className={styles.featureIcon}>🌐</span>
+            <div>
+              <h3>Global Infrastructure</h3>
+              <p>Low latency connections worldwide</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

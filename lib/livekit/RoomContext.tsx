@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Room, RoomOptions, RoomConnectOptions, VideoPresets, VideoCodec, ExternalE2EEKeyProvider, DeviceUnsupportedError, RoomEvent } from 'livekit-client';
+import { Room, RoomOptions, RoomConnectOptions, VideoPresets, VideoCodec, ExternalE2EEKeyProvider, RoomEvent } from 'livekit-client';
 import { ConnectionDetails } from './types';
 import { useSetupE2EE } from './useSetupE2EE';
 import { useLowCPUOptimizer } from './usePerfomanceOptimiser';
@@ -36,6 +36,7 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [joinSeq, setJoinSeq] = useState(0);
 
   const keyProvider = new ExternalE2EEKeyProvider();
   const { worker, e2eePassphrase } = useSetupE2EE();
@@ -76,6 +77,8 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
     try {
       setError(null);
       setIsConnecting(true);
+      const mySeq = joinSeq + 1;
+      setJoinSeq(mySeq);
 
       // Leave current room if connected
       if (currentRoom) {
@@ -103,9 +106,12 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       
       // Set up event listeners
       room.on(RoomEvent.Connected, () => {
-        console.log('Connected to room:', room.name);
-        console.log('Local participant:', room.localParticipant.identity);
-        console.log('Remote participants:', Array.from(room.remoteParticipants.values()).map(p => p.identity));
+        // Abandon if a newer join started
+        if (mySeq !== joinSeq) {
+          room.disconnect();
+          return;
+        }
+        setCurrentUser(room.localParticipant.identity);
         setIsConnected(true);
         setIsConnecting(false);
       });
@@ -159,12 +165,17 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
         autoSubscribe: true,
       };
 
-      await room.connect(connectionDetails.serverUrl, connectionDetails.participantToken, connectOptions);
-
-      // Enable microphone and camera by default
+      await room.connect(
+        connectionDetails.serverUrl,
+        connectionDetails.participantToken,
+        connectOptions,
+      );
+      // Persist AV prefs across rooms (mic on by default, cam off by default)
+      const micPref = localStorage.getItem('lk-mic-enabled');
+      const camPref = localStorage.getItem('lk-camera-enabled');
       try {
-        await room.localParticipant.setMicrophoneEnabled(true);
-        await room.localParticipant.setCameraEnabled(true);
+        await room.localParticipant.setMicrophoneEnabled(micPref !== 'false');
+        await room.localParticipant.setCameraEnabled(camPref === 'true');
       } catch (mediaError) {
         console.warn('Failed to enable microphone/camera:', mediaError);
       }
@@ -177,7 +188,7 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       setError(err instanceof Error ? err.message : 'Failed to join room');
       setIsConnecting(false);
     }
-  }, [currentRoom, getUserIdentity, createRoom, e2eeEnabled, keyProvider, e2eePassphrase, worker]);
+  }, [currentRoom, getUserIdentity, createRoom, e2eeEnabled, keyProvider, e2eePassphrase, worker, joinSeq]);
 
   const leaveRoom = useCallback(() => {
     if (currentRoom) {
@@ -194,6 +205,19 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       if (currentRoom) {
         currentRoom.disconnect();
       }
+    };
+  }, [currentRoom]);
+
+  // Ensure we disconnect cleanly if tab closes
+  useEffect(() => {
+    const handler = () => {
+      if (currentRoom) currentRoom.disconnect();
+    };
+    window.addEventListener('pagehide', handler);
+    window.addEventListener('beforeunload', handler);
+    return () => {
+      window.removeEventListener('pagehide', handler);
+      window.removeEventListener('beforeunload', handler);
     };
   }, [currentRoom]);
 
