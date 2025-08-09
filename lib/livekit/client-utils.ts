@@ -3,7 +3,12 @@ export function encodePassphrase(passphrase: string) {
 }
 
 export function decodePassphrase(pass: string) {
-  return new Uint8Array(Buffer.from(pass, 'base64'));
+  // handle URL-safe base64 if you use it
+  const b64 = pass.replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
 }
 
 export function generateRoomId(): string {

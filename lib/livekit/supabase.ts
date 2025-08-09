@@ -1,32 +1,15 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
-let _supabase: SupabaseClient | null = null;
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-function getSupabase(): SupabaseClient {
-  if (_supabase) return _supabase;
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) {
-    throw new Error('Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY)');
-  }
-  _supabase = createClient(url, anon, {
-    realtime: { params: { eventsPerSecond: 10 } },
-  });
-  return _supabase;
-}
+export const supabase = url && key
+  ? createClient(url, key, { realtime: { params: { eventsPerSecond: 10 } } })
+  : undefined;
 
-/**
- * Presence channel for voice rooms.
- * @param roomId e.g. 'general-voice'
- * @param userKey the *user identity* (must be unique per user)
- */
-export function getVoiceRoomPresence(roomId: string, userKey: string) {
-  const supabase = getSupabase();
+export const getVoiceRoomPresence = (roomId: string, userId: string) => {
+  if (!supabase) return undefined as unknown as ReturnType<typeof createClient>['channel'];
   return supabase.channel(`voice-room-${roomId}`, {
-    config: {
-      presence: {
-        key: userKey, // IMPORTANT: presence key must be a user identity, not the room id
-      },
-    },
+    config: { presence: { key: userId } },
   });
-}
+};
